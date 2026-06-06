@@ -12,6 +12,12 @@ ai-llm-agent-learning-system/
 llm-agent-complete-advanced-plan/
 ```
 
+另外新增独立的大模型发展史与 AI 工具体系全景图谱：
+
+```text
+llm-history-and-ai-tooling-atlas/
+```
+
 核心内容：
 
 - 全球 AI 与 LLM Agent 最新进展追踪攻略；
@@ -29,9 +35,19 @@ llm-agent-complete-advanced-plan/
 - 66 篇论文逐篇要点分析和学习建议；
 - 高级项目路线、能力考核标准和复盘模板。
 
+大模型发展史图谱额外包含：
+
+- 按公司分类的大模型发展史；
+- 2017-2026 每半年大模型发展总结；
+- 每阶段领先模型、优势、缺点和指标分析；
+- AI 插件、AI 编辑器、CLI Agent、Cloud Agent 和 Agent 框架生态；
+- 模型与工具选型指南。
+
 入口文档：
 
 - `ai-llm-agent-learning-system/README.md`
 - `ai-llm-agent-learning-system/00_总览/能力地图与使用说明.md`
 - `llm-agent-complete-advanced-plan/README.md`
 - `llm-agent-complete-advanced-plan/01_完整课程计划/32周完整课程_逐课含面试题.md`
+- `llm-history-and-ai-tooling-atlas/README.md`
+- `llm-history-and-ai-tooling-atlas/02_半年阶段时间线/2017-2026每半年大模型发展总结.md`
