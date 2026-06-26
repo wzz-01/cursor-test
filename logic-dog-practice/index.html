@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>逻辑狗大班下学期 · 比赛练习卡（原创）</title>
+  <style>
+    :root {
+      --red: #e53935;
+      --orange: #fb8c00;
+      --yellow: #fdd835;
+      --lgreen: #9ccc65;
+      --green: #43a047;
+      --lblue: #4fc3f7;
+      --blue: #1e88e5;
+      --purple: #8e24aa;
+      --pink: #ec407a;
+      --brown: #8d6e63;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      padding: 20px;
+    }
+    .header {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .header h1 { font-size: 22px; color: #1565c0; margin-bottom: 8px; }
+    .header p { font-size: 14px; line-height: 1.7; color: #555; }
+    .header .tip { background: #fff8e1; border-left: 4px solid #ffc107; padding: 10px 14px; margin-top: 12px; border-radius: 0 8px 8px 0; font-size: 13px; }
+    .card {
+      max-width: 900px;
+      margin: 0 auto 32px;
+      background: #fff;
+      border: 3px solid #1565c0;
+      border-radius: 12px;
+      overflow: hidden;
+      page-break-after: always;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .card-header {
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-header .num { font-size: 18px; font-weight: bold; }
+    .card-header .theme { font-size: 13px; opacity: .9; }
+    .guide {
+      background: #e3f2fd;
+      padding: 10px 20px;
+      font-size: 14px;
+      border-bottom: 1px dashed #90caf9;
+    }
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 320px;
+    }
+    .questions, .answers {
+      padding: 16px;
+    }
+    .questions { border-right: 2px dashed #bdbdbd; background: #fafafa; }
+    .section-title {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .q-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .dot {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(0,0,0,.15);
+      margin-top: 2px;
+    }
+    .dot-red { background: var(--red); }
+    .dot-orange { background: var(--orange); }
+    .dot-yellow { background: var(--yellow); }
+    .dot-lgreen { background: var(--lgreen); }
+    .dot-green { background: var(--green); }
+    .dot-lblue { background: var(--lblue); }
+    .dot-blue { background: var(--blue); }
+    .dot-purple { background: var(--purple); }
+    .dot-pink { background: var(--pink); }
+    .dot-brown { background: var(--brown); }
+    .a-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .a-item {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .a-item .slot {
+      position: absolute;
+      right: 6px; top: 6px;
+      width: 20px; height: 20px;
+      border: 2px dashed #ccc;
+      border-radius: 50%;
+    }
+    .shape { font-size: 28px; margin-bottom: 4px; }
+    .emoji-big { font-size: 36px; }
+    .pattern-row { display: flex; gap: 6px; justify-content: center; font-size: 24px; }
+    .coin { font-size: 20px; }
+    .footer-note {
+      padding: 8px 20px;
+      font-size: 12px;
+      color: #999;
+      border-top: 1px solid #eee;
+      text-align: center;
+    }
+    .answers-page {
+      max-width: 900px;
+      margin: 0 auto 32px;
+      background: #fff;
+      border: 2px solid #43a047;
+      border-radius: 12px;
+      padding: 20px;
+      page-break-before: always;
+    }
+    .answers-page h2 { color: #2e7d32; margin-bottom: 16px; font-size: 20px; }
+    .ans-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .ans-table th, .ans-table td { border: 1px solid #c8e6c9; padding: 8px 12px; text-align: left; }
+    .ans-table th { background: #e8f5e9; }
+    .color-legend {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .color-legend span { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .header, .color-legend { box-shadow: none; }
+      .card { box-shadow: none; margin-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>逻辑狗大班下学期 · 比赛模拟练习卡</h1>
+  <p>本套为<strong>原创模拟题</strong>，题型对标大班下学期 6 本教材 + 郑州比赛常见考点，非官方题卡扫描件。</p>
+  <div class="tip">
+    <strong>使用方法：</strong>打印后插入 10 纽操作板（或直接在纸上用彩笔标出答案位置）。<br>
+    ① 圆钮推到底 → ② 听/读指导语 → ③ 按圆钮颜色从左到右做题 → ④ 翻到文末核对答案。<br>
+    建议每张卡限时 <strong>50 秒</strong> 练习。<br>
+    <strong>弱项专项（图形版·10纽·不用认字）：</strong>
+    <a href="guancha-qingjing.html">观察与理解</a> ·
+    <a href="faxian-lianxiang-panduan.html">发现联想与判断</a> ·
+    <a href="观察与理解-图形版-10纽.pdf">观察与理解 PDF</a> ·
+    <a href="发现联想与判断-图形版-10纽.pdf">发现联想与判断 PDF</a>
+  </div>
+</div>
+
+<div class="color-legend">
+  <strong>圆钮颜色对照：</strong>
+  <span><i class="dot dot-red"></i>红</span>
+  <span><i class="dot dot-orange"></i>橙</span>
+  <span><i class="dot dot-yellow"></i>黄</span>
+  <span><i class="dot dot-lgreen"></i>浅绿</span>
+  <span><i class="dot dot-green"></i>绿</span>
+  <span><i class="dot dot-lblue"></i>浅蓝</span>
+  <span><i class="dot dot-blue"></i>蓝</span>
+  <span><i class="dot dot-purple"></i>紫</span>
+  <span><i class="dot dot-pink"></i>粉</span>
+  <span><i class="dot dot-brown"></i>棕</span>
+</div>
+
+<!-- 练习卡 1：图形对对碰 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 01</span>
+    <span class="theme">《图形对对碰》· 找规律</span>
+  </div>
+  <div class="guide">指导语：观察左边的图形规律，在右边找出每种规律对应的下一项。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>规律：🔴🔵🔴🔵🔴 → 下一个是什么？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>规律：△□△□△ → 下一个是什么？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>规律：⭐⭐🌙⭐⭐🌙 → 下一个是什么？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>规律：大○小○大○ → 下一个是什么？</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>规律：🟥🟦🟨🟥🟦 → 下一个是什么？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>规律：↑↓↑↓↑ → 下一个是什么？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏（把圆钮推到对应格子旁）</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>🔵 蓝色圆</div>
+        <div class="a-item"><div class="slot"></div>□ 正方形</div>
+        <div class="a-item"><div class="slot"></div>⭐ 星星</div>
+        <div class="a-item"><div class="slot"></div>小○ 小圆</div>
+        <div class="a-item"><div class="slot"></div>🟨 黄色</div>
+        <div class="a-item"><div class="slot"></div>↓ 向下</div>
+        <div class="a-item"><div class="slot"></div>🔴 红色圆</div>
+        <div class="a-item"><div class="slot"></div>△ 三角形</div>
+        <div class="a-item"><div class="slot"></div>🌙 月亮</div>
+        <div class="a-item"><div class="slot"></div>大○ 大圆</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题 · 按圆钮从左到右逐题推</div>
+</div>
+
+<!-- 练习卡 2：数量游戏 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 02</span>
+    <span class="theme">《数量游戏》· 比较多少</span>
+  </div>
+  <div class="guide">指导语：比较左右两边的数量，找出"多""少"或"一样多"的正确描述。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>🍎🍎🍎🍎🍎 vs 🍊🍊🍊 → 哪边多？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>🐟🐟🐟🐟 vs 🐟🐟🐟🐟 → 哪边多？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>🌸🌸 vs 🌸🌸🌸🌸🌸🌸 → 哪边少？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>左边 7 个⚽，右边 4 个⚽，相差几个？</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>🔵🔵🔵🔵🔵🔵 vs 🔴🔴🔴🔴🔴🔴 → ？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>🐦🐦🐦 vs 🐦🐦🐦🐦🐦 → 右边比左边多几个？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>🍎 苹果多</div>
+        <div class="a-item"><div class="slot"></div>一样多</div>
+        <div class="a-item"><div class="slot"></div>🌸 左边少</div>
+        <div class="a-item"><div class="slot"></div>多 3 个</div>
+        <div class="a-item"><div class="slot"></div>一样多</div>
+        <div class="a-item"><div class="slot"></div>多 2 个</div>
+        <div class="a-item"><div class="slot"></div>🍊 橘子多</div>
+        <div class="a-item"><div class="slot"></div>🐟 鱼多</div>
+        <div class="a-item"><div class="slot"></div>多 4 个</div>
+        <div class="a-item"><div class="slot"></div>多 1 个</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题</div>
+</div>
+
+<!-- 练习卡 3：观察与理解 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 03</span>
+    <span class="theme">《观察与理解》· 情境推理</span>
+  </div>
+  <div class="guide">指导语：仔细观察场景，根据情境判断正确答案。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>☀️ 大晴天，小朋友应该带什么？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>🌧️ 下雨了，出门需要什么？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>❄️ 下雪天，穿什么最合适？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>🍳 要做煎蛋，先需要什么？</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>🚗 汽车没油了，去哪里？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>📚 要看书，去哪里最安静？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>🧢 遮阳帽</div>
+        <div class="a-item"><div class="slot"></div>☂️ 雨伞</div>
+        <div class="a-item"><div class="slot"></div>🧥 厚棉衣</div>
+        <div class="a-item"><div class="slot"></div>🥚 鸡蛋</div>
+        <div class="a-item"><div class="slot"></div>⛽ 加油站</div>
+        <div class="a-item"><div class="slot"></div>📖 图书馆</div>
+        <div class="a-item"><div class="slot"></div>🧤 手套</div>
+        <div class="a-item"><div class="slot"></div>🏊 游泳池</div>
+        <div class="a-item"><div class="slot"></div>🍦 冰淇淋</div>
+        <div class="a-item"><div class="slot"></div>🏫 操场</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题</div>
+</div>
+
+<!-- 练习卡 4：发现联想与判断 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 04</span>
+    <span class="theme">《发现、联想与判断》· 分类配对</span>
+  </div>
+  <div class="guide">指导语：根据物品的用途或种类，找出属于同一类的选项。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>🍎 苹果 → 属于哪一类？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>✏️ 铅笔 → 属于哪一类？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>🚗 汽车 → 属于哪一类？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>🐕 狗 → 属于哪一类？</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>👕 上衣 → 属于哪一类？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>🏀 篮球 → 属于哪一类？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>🍊 水果类</div>
+        <div class="a-item"><div class="slot"></div>📏 文具类</div>
+        <div class="a-item"><div class="slot"></div>🚌 交通工具</div>
+        <div class="a-item"><div class="slot"></div>🐈 动物类</div>
+        <div class="a-item"><div class="slot"></div>👖 服装类</div>
+        <div class="a-item"><div class="slot"></div>⚽ 运动器材</div>
+        <div class="a-item"><div class="slot"></div>🥕 蔬菜类</div>
+        <div class="a-item"><div class="slot"></div>🍳 厨具类</div>
+        <div class="a-item"><div class="slot"></div>🏠 家具类</div>
+        <div class="a-item"><div class="slot"></div>🌸 植物类</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题</div>
+</div>
+
+<!-- 练习卡 5：发现联想与判断 - 反义词 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 05</span>
+    <span class="theme">《联想、推理与字词游戏》· 反义词</span>
+  </div>
+  <div class="guide">指导语：找出与左边词语意思相反的词。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>大 → ？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>高 → ？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>快 → ？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>热 → ？</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>开 → ？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>白天 → ？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>小</div>
+        <div class="a-item"><div class="slot"></div>矮 / 低</div>
+        <div class="a-item"><div class="slot"></div>慢</div>
+        <div class="a-item"><div class="slot"></div>冷</div>
+        <div class="a-item"><div class="slot"></div>关</div>
+        <div class="a-item"><div class="slot"></div>黑夜</div>
+        <div class="a-item"><div class="slot"></div>长</div>
+        <div class="a-item"><div class="slot"></div>胖</div>
+        <div class="a-item"><div class="slot"></div>新</div>
+        <div class="a-item"><div class="slot"></div>多</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题 · 比赛高频题型</div>
+</div>
+
+<!-- 练习卡 6：货币游戏 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 06</span>
+    <span class="theme">《货币游戏》· 简单计算</span>
+  </div>
+  <div class="guide">指导语：计算买东西需要多少钱，或判断钱够不够。</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>🍭 2元 + 🍬 3元 = ？元</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>💰 10元买 🖍️ 6元，找回？元</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>🍎 4元 + 🍌 5元 = ？元</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>有 8 元，买 5 元的书，剩？元</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>🥛 3元 + 🍞 2元 + 🧈 1元 = ？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>有 5 元，能买 7 元的玩具吗？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>5 元</div>
+        <div class="a-item"><div class="slot"></div>4 元</div>
+        <div class="a-item"><div class="slot"></div>9 元</div>
+        <div class="a-item"><div class="slot"></div>3 元</div>
+        <div class="a-item"><div class="slot"></div>6 元</div>
+        <div class="a-item"><div class="slot"></div>不够</div>
+        <div class="a-item"><div class="slot"></div>7 元</div>
+        <div class="a-item"><div class="slot"></div>2 元</div>
+        <div class="a-item"><div class="slot"></div>够</div>
+        <div class="a-item"><div class="slot"></div>8 元</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">6 题</div>
+</div>
+
+<!-- 练习卡 7：综合 10 题 -->
+<div class="card">
+  <div class="card-header">
+    <span class="num">练习卡 07</span>
+    <span class="theme">综合模拟 · 10 题（贴近比赛）</span>
+  </div>
+  <div class="guide">指导语：听清题目，按圆钮颜色从左到右，在右边找出正确答案。限时 50 秒！</div>
+  <div class="card-body">
+    <div class="questions">
+      <div class="section-title">题目栏</div>
+      <div class="q-item"><i class="dot dot-red"></i><div>🔺🔻🔺🔻 → 下一个？</div></div>
+      <div class="q-item"><i class="dot dot-orange"></i><div>🐶 是什么动物？</div></div>
+      <div class="q-item"><i class="dot dot-yellow"></i><div>🌞 的反义词？</div></div>
+      <div class="q-item"><i class="dot dot-lgreen"></i><div>⚽⚽⚽ vs ⚽⚽⚽⚽⚽</div></div>
+      <div class="q-item"><i class="dot dot-green"></i><div>✂️ 属于哪类？</div></div>
+      <div class="q-item"><i class="dot dot-lblue"></i><div>3 + 4 = ？</div></div>
+      <div class="q-item"><i class="dot dot-blue"></i><div>🌧️ 出门带什么？</div></div>
+      <div class="q-item"><i class="dot dot-purple"></i><div>🍰🍰🍰🍰 vs 🍰🍰🍰🍰🍰🍰</div></div>
+      <div class="q-item"><i class="dot dot-pink"></i><div>长 → 反义词？</div></div>
+      <div class="q-item"><i class="dot dot-brown"></i><div>5元+3元=？</div></div>
+    </div>
+    <div class="answers">
+      <div class="section-title">答案栏</div>
+      <div class="a-grid">
+        <div class="a-item"><div class="slot"></div>🔺 向上</div>
+        <div class="a-item"><div class="slot"></div>🐕 狗</div>
+        <div class="a-item"><div class="slot"></div>🌙 月亮</div>
+        <div class="a-item"><div class="slot"></div>右边多</div>
+        <div class="a-item"><div class="slot"></div>文具</div>
+        <div class="a-item"><div class="slot"></div>7</div>
+        <div class="a-item"><div class="slot"></div>☂️ 伞</div>
+        <div class="a-item"><div class="slot"></div>右边多2个</div>
+        <div class="a-item"><div class="slot"></div>短</div>
+        <div class="a-item"><div class="slot"></div>8元</div>
+        <div class="a-item"><div class="slot"></div>🔻 向下</div>
+        <div class="a-item"><div class="slot"></div>🐈 猫</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">10 题 · 全真模拟</div>
+</div>
+
+<!-- 答案页 -->
+<div class="answers-page">
+  <h2>📋 答案对照表（家长用）</h2>
+  <table class="ans-table">
+    <tr><th>卡号</th><th>圆钮颜色</th><th>正确答案位置</th></tr>
+    <tr><td>01</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>02</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>03</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>04</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>05</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>06</td><td>红→橙→黄→浅绿→绿→浅蓝</td><td>第1格→第2格→第3格→第4格→第5格→第6格</td></tr>
+    <tr><td>07</td><td>红→橙→黄→浅绿→绿→浅蓝→蓝→紫→粉→棕</td><td>第1→2→3→4→5→6→7→8→9→10格</td></tr>
+  </table>
+  <p style="margin-top:16px;font-size:13px;color:#666;line-height:1.8;">
+    <strong>练习建议：</strong><br>
+    · 每天练 2 张，先用教材原卡熟悉，再用本套模拟卡限时冲刺。<br>
+    · 比赛用的是<strong>定制卡</strong>，图案会不同，但题型逻辑与以上 6 本教材一致。<br>
+    · 向幼儿园老师索要是否有园所集训用的模拟卡，那是最接近比赛的。
+  </p>
+</div>
+
+</body>
+</html>

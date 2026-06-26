@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>发现联想与判断 · 图形版（10纽）</title>
+  <style>
+    @page { size: A4 landscape; margin: 8mm; }
+    :root {
+      --red:#e53935; --orange:#fb8c00; --yellow:#fdd835;
+      --lgreen:#9ccc65; --green:#43a047; --lblue:#4fc3f7;
+      --blue:#1e88e5; --purple:#8e24aa; --pink:#ec407a; --brown:#8d6e63;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif; background:#fff; }
+    .cover { page-break-after:always; height:190mm; display:flex; flex-direction:column; justify-content:center; align-items:center; border:5px solid #7b1fa2; border-radius:12px; background:linear-gradient(160deg,#f3e5f5,#fff); }
+    .cover .big { font-size:64px; }
+    .dots-row { display:flex; gap:5px; margin:14px 0; }
+    .dot { width:16px; height:16px; border-radius:50%; border:1.5px solid #888; }
+    .d-red{background:var(--red)} .d-orange{background:var(--orange)} .d-yellow{background:var(--yellow)}
+    .d-lgreen{background:var(--lgreen)} .d-green{background:var(--green)} .d-lblue{background:var(--lblue)}
+    .d-blue{background:var(--blue)} .d-purple{background:var(--purple)} .d-pink{background:var(--pink)} .d-brown{background:var(--brown)}
+    .parent-note { font-family:"PingFang SC",sans-serif; font-size:12px; color:#888; margin-top:16px; text-align:center; line-height:1.8; max-width:85%; border-top:1px dashed #ccc; padding-top:12px; }
+    .card { page-break-after:always; height:190mm; border:3px solid #7b1fa2; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+    .card-head { background:#7b1fa2; color:#fff; padding:6px 14px; font-family:"PingFang SC",sans-serif; font-size:12px; display:flex; justify-content:space-between; }
+    .card-main { flex:1; display:grid; grid-template-columns:52% 48%; }
+    .col-q { padding:8px 10px; border-right:2px dashed #ce93d8; background:#faf5ff; }
+    .col-a { padding:8px 10px; }
+    .q-row { display:flex; align-items:center; gap:6px; margin-bottom:5px; height:30px; }
+    .scene { font-size:22px; letter-spacing:2px; flex:1; }
+    .arrow { font-size:14px; color:#999; }
+    .a-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+    .a-cell { border:2px solid #ccc; border-radius:8px; aspect-ratio:1.1; display:flex; align-items:center; justify-content:center; font-size:30px; position:relative; background:#fff; }
+    .a-cell .slot { position:absolute; top:3px; right:3px; width:12px; height:12px; border:1.5px dashed #aaa; border-radius:50%; }
+    .card-foot { padding:4px 12px; font-size:10px; color:#aaa; font-family:"PingFang SC",sans-serif; border-top:1px solid #eee; }
+    .answer-sheet { page-break-before:always; font-family:"PingFang SC",sans-serif; padding:10px; }
+    .answer-sheet h2 { font-size:18px; color:#2e7d32; margin-bottom:10px; }
+    table { width:100%; border-collapse:collapse; font-size:11px; }
+    th { background:#e8f5e9; } th,td { border:1px solid #a5d6a7; padding:5px 7px; }
+    .tips { font-size:11px; line-height:1.8; margin-top:12px; background:#f9fbe7; padding:10px; border-radius:6px; }
+  </style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="big">🔍🔗🤔</div>
+  <div class="dots-row">
+    <i class="dot d-red"></i><i class="dot d-orange"></i><i class="dot d-yellow"></i>
+    <i class="dot d-lgreen"></i><i class="dot d-green"></i><i class="dot d-lblue"></i>
+    <i class="dot d-blue"></i><i class="dot d-purple"></i><i class="dot d-pink"></i><i class="dot d-brown"></i>
+  </div>
+  <div style="font-size:48px;">🐶📋</div>
+  <div class="parent-note">【家长看】发现·联想与判断 · 纯图形 · 10纽 · 4张<br>用途、关联、相反、分类 — 全部用图，孩子不用认字</div>
+</div>
+
+<!-- FX-01 用途 -->
+<div class="card">
+  <div class="card-head"><span>FX-01 🔨👨‍⚕️🌂</span><span>家长：这个东西干什么用？</span></div>
+  <div class="card-main">
+    <div class="col-q">
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🔨🔩❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🩺👨‍⚕️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🌧️🌂❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">✏️📝❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">🧯🔥❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🍳👩‍🍳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">✂️📄❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🪥🦷❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">📏📐❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🔦🌑❓</span><span class="arrow">→</span></div>
+    </div>
+    <div class="col-a">
+      <div class="a-grid">
+        <div class="a-cell"><div class="slot"></div>🔩</div>
+        <div class="a-cell"><div class="slot"></div>👨‍⚕️</div>
+        <div class="a-cell"><div class="slot"></div>🌧️</div>
+        <div class="a-cell"><div class="slot"></div>✍️</div>
+        <div class="a-cell"><div class="slot"></div>🔥</div>
+        <div class="a-cell"><div class="slot"></div>🍳</div>
+        <div class="a-cell"><div class="slot"></div>✂️</div>
+        <div class="a-cell"><div class="slot"></div>🦷</div>
+        <div class="a-cell"><div class="slot"></div>📏</div>
+        <div class="a-cell"><div class="slot"></div>💡</div>
+        <div class="a-cell"><div class="slot"></div>👮</div>
+        <div class="a-cell"><div class="slot"></div>🎨</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-foot">10纽 · 用途匹配</div>
+</div>
+
+<!-- FX-02 关联 -->
+<div class="card">
+  <div class="card-head"><span>FX-02 🥚🌱🐛</span><span>家长：会变成什么？</span></div>
+  <div class="card-main">
+    <div class="col-q">
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🥚⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🌱💧❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🐛⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🧶⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">🌾⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🐣⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🥛⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🪵⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🧊⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🎂🎉❓</span><span class="arrow">→</span></div>
+    </div>
+    <div class="col-a">
+      <div class="a-grid">
+        <div class="a-cell"><div class="slot"></div>🍳</div>
+        <div class="a-cell"><div class="slot"></div>🌻</div>
+        <div class="a-cell"><div class="slot"></div>🦋</div>
+        <div class="a-cell"><div class="slot"></div>🧣</div>
+        <div class="a-cell"><div class="slot"></div>🍞</div>
+        <div class="a-cell"><div class="slot"></div>🐔</div>
+        <div class="a-cell"><div class="slot"></div>🧀</div>
+        <div class="a-cell"><div class="slot"></div>🪑</div>
+        <div class="a-cell"><div class="slot"></div>💧</div>
+        <div class="a-cell"><div class="slot"></div>🎁</div>
+        <div class="a-cell"><div class="slot"></div>🪨</div>
+        <div class="a-cell"><div class="slot"></div>🐸</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-foot">10纽 · 找关联</div>
+</div>
+
+<!-- FX-03 相反 -->
+<div class="card">
+  <div class="card-head"><span>FX-03 ↔️ 找相反</span><span>家长：哪个意思相反？</span></div>
+  <div class="card-main">
+    <div class="col-q">
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">😊 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">⬆️ ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🌞 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🐘 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">🧼 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🔊 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🐢 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🪣满 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🚪开 ↔️ ❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🔥热 ↔️ ❓</span><span class="arrow">→</span></div>
+    </div>
+    <div class="col-a">
+      <div class="a-grid">
+        <div class="a-cell"><div class="slot"></div>😢</div>
+        <div class="a-cell"><div class="slot"></div>⬇️</div>
+        <div class="a-cell"><div class="slot"></div>🌙</div>
+        <div class="a-cell"><div class="slot"></div>🐁</div>
+        <div class="a-cell"><div class="slot"></div>🤢</div>
+        <div class="a-cell"><div class="slot"></div>🤫</div>
+        <div class="a-cell"><div class="slot"></div>🐇</div>
+        <div class="a-cell"><div class="slot"></div>🪣</div>
+        <div class="a-cell"><div class="slot"></div>🚪</div>
+        <div class="a-cell"><div class="slot"></div>🧊</div>
+        <div class="a-cell"><div class="slot"></div>😊</div>
+        <div class="a-cell"><div class="slot"></div>⬆️</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-foot">10纽 · 找相反（比赛高频）</div>
+</div>
+
+<!-- FX-04 分类+综合 -->
+<div class="card">
+  <div class="card-head"><span>FX-04 🍎🚗🐕 分类+综合</span><span>家长：哪个不一样？或选对的</span></div>
+  <div class="card-main">
+    <div class="col-q">
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🍎🍌🚗🍊</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🐕🐈🐟🐰</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">✏️📏🍳📐</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">👂❓🔊</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">👃❓🌸</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🎁🎀📦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🌸🌷🐝❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">❄️⛄🧣❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🚌🚗✈️🚲</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🍦💦😢❓</span><span class="arrow">→</span></div>
+    </div>
+    <div class="col-a">
+      <div class="a-grid">
+        <div class="a-cell"><div class="slot"></div>🚗</div>
+        <div class="a-cell"><div class="slot"></div>🐟</div>
+        <div class="a-cell"><div class="slot"></div>🍳</div>
+        <div class="a-cell"><div class="slot"></div>👂</div>
+        <div class="a-cell"><div class="slot"></div>👃</div>
+        <div class="a-cell"><div class="slot"></div>🎁</div>
+        <div class="a-cell"><div class="slot"></div>🌸</div>
+        <div class="a-cell"><div class="slot"></div>❄️</div>
+        <div class="a-cell"><div class="slot"></div>🚌</div>
+        <div class="a-cell"><div class="slot"></div>😢</div>
+        <div class="a-cell"><div class="slot"></div>🍎</div>
+        <div class="a-cell"><div class="slot"></div>👀</div>
+      </div>
+    </div>
+  </div>
+  <div class="card-foot">10纽 · 分类+综合</div>
+</div>
+
+<div class="answer-sheet">
+  <h2>📋 答案页（仅家长看）</h2>
+  <table>
+    <tr><th>卡</th><th>红</th><th>橙</th><th>黄</th><th>浅绿</th><th>绿</th><th>浅蓝</th><th>蓝</th><th>紫</th><th>粉</th><th>棕</th></tr>
+    <tr><td>FX-01</td><td>1🔩</td><td>2👨‍⚕️</td><td>3🌧️</td><td>4✍️</td><td>5🔥</td><td>6🍳</td><td>7✂️</td><td>8🦷</td><td>9📏</td><td>10💡</td></tr>
+    <tr><td>FX-02</td><td>1🍳</td><td>2🌻</td><td>3🦋</td><td>4🧣</td><td>5🍞</td><td>6🐔</td><td>7🧀</td><td>8🪑</td><td>9💧</td><td>10🎁</td></tr>
+    <tr><td>FX-03</td><td>1😢</td><td>2⬇️</td><td>3🌙</td><td>4🐁</td><td>5🤢</td><td>6🤫</td><td>7🐇</td><td>8空桶</td><td>9关门</td><td>10🧊</td></tr>
+    <tr><td>FX-04</td><td>1🚗</td><td>2🐟</td><td>3🍳</td><td>4👂</td><td>5👃</td><td>6🎁</td><td>7🌸</td><td>8❄️</td><td>9🚌</td><td>10😢</td></tr>
+  </table>
+  <div class="tips">
+    <strong>陪练话术举例（您说，孩子看图选）：</strong><br>
+    · FX-01：「锤子用来干什么？」→ 孩子指 🔩<br>
+    · FX-03：「开心反过来是什么表情？」→ 孩子指 😢<br>
+    · FX-04：「苹果香蕉橘子汽车，哪个不是水果？」→ 孩子指 🚗
+  </div>
+</div>
+
+</body>
+</html>
