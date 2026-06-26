@@ -2,323 +2,363 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>观察与理解 · 情境推理 专项练习</title>
+  <title>观察与理解 · 图形版（10纽·无文字）</title>
   <style>
-    @page { size: A4 landscape; margin: 10mm; }
+    @page { size: A4 landscape; margin: 8mm; }
     :root {
       --red:#e53935; --orange:#fb8c00; --yellow:#fdd835;
       --lgreen:#9ccc65; --green:#43a047; --lblue:#4fc3f7;
       --blue:#1e88e5; --purple:#8e24aa; --pink:#ec407a; --brown:#8d6e63;
     }
     * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:"PingFang SC","Microsoft YaHei","SimHei",sans-serif; color:#222; background:#fff; }
+    body { font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; color:#222; background:#fff; }
 
     .cover {
-      page-break-after:always; height:185mm;
+      page-break-after:always; height:190mm;
       display:flex; flex-direction:column; justify-content:center; align-items:center;
-      border:4px solid #1565c0; border-radius:8px; margin-bottom:0;
-      background:linear-gradient(160deg,#e3f2fd,#fff);
+      border:5px solid #1565c0; border-radius:12px;
+      background:linear-gradient(160deg,#e3f2fd 0%,#fff 60%);
     }
-    .cover h1 { font-size:32px; color:#1565c0; margin-bottom:12px; }
-    .cover h2 { font-size:20px; color:#555; font-weight:normal; margin-bottom:24px; }
-    .cover p { font-size:14px; color:#666; line-height:2; text-align:center; max-width:80%; }
-    .cover .badge { background:#1565c0; color:#fff; padding:6px 18px; border-radius:20px; font-size:13px; margin-top:20px; }
+    .cover .big-ico { font-size:72px; margin-bottom:16px; }
+    .cover .dots-row { display:flex; gap:6px; margin:16px 0; }
+    .cover .parent-note {
+      font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+      font-size:12px; color:#888; margin-top:20px; text-align:center; line-height:1.8;
+      max-width:85%; border-top:1px dashed #ccc; padding-top:14px;
+    }
 
     .card {
       page-break-after:always; page-break-inside:avoid;
       border:3px solid #1565c0; border-radius:8px; overflow:hidden;
-      height:185mm; display:flex; flex-direction:column;
+      height:190mm; display:flex; flex-direction:column;
     }
     .card-head {
-      background:#1565c0; color:#fff; padding:8px 16px;
-      display:flex; justify-content:space-between; font-size:14px;
+      background:#1565c0; color:#fff; padding:6px 14px;
+      display:flex; justify-content:space-between; align-items:center;
+      font-family:"PingFang SC","Microsoft YaHei",sans-serif; font-size:13px;
     }
-    .card-head .title { font-weight:bold; font-size:16px; }
-    .guide {
-      background:#e3f2fd; padding:7px 16px; font-size:13px;
-      border-bottom:1px dashed #90caf9;
+    .card-head .parent-hint { font-size:11px; opacity:.85; }
+  </style>
+  <style>
+    .card-main { flex:1; display:grid; grid-template-columns:52% 48%; }
+    .col-q { padding:8px 10px; border-right:2px dashed #bbb; background:#f8fbff; }
+    .col-a { padding:8px 10px; }
+    .q-row {
+      display:flex; align-items:center; gap:6px;
+      margin-bottom:5px; height:30px;
     }
-    .card-main { flex:1; display:grid; grid-template-columns:1fr 1fr; }
-    .col-q { padding:12px 14px; border-right:2px dashed #bbb; background:#f8fbff; }
-    .col-a { padding:12px 14px; }
-    .col-label { font-size:11px; color:#999; margin-bottom:10px; letter-spacing:1px; }
-    .q-row { display:flex; gap:8px; margin-bottom:10px; font-size:14px; line-height:1.5; align-items:flex-start; }
-    .dot { width:18px; height:18px; border-radius:50%; flex-shrink:0; border:1.5px solid #999; margin-top:2px; }
+    .dot { width:16px; height:16px; border-radius:50%; flex-shrink:0; border:1.5px solid #888; }
     .d-red{background:var(--red)} .d-orange{background:var(--orange)} .d-yellow{background:var(--yellow)}
     .d-lgreen{background:var(--lgreen)} .d-green{background:var(--green)} .d-lblue{background:var(--lblue)}
     .d-blue{background:var(--blue)} .d-purple{background:var(--purple)} .d-pink{background:var(--pink)} .d-brown{background:var(--brown)}
-    .a-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .scene { font-size:22px; letter-spacing:2px; flex:1; }
+    .arrow { font-size:14px; color:#999; }
+    .a-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
     .a-cell {
-      border:1.5px solid #ccc; border-radius:6px; padding:7px 5px;
-      text-align:center; font-size:12px; min-height:58px;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      position:relative;
+      border:2px solid #ccc; border-radius:8px; aspect-ratio:1.1;
+      display:flex; align-items:center; justify-content:center;
+      font-size:30px; position:relative; background:#fff;
     }
     .a-cell .slot {
-      position:absolute; top:4px; right:4px;
-      width:14px; height:14px; border:1.5px dashed #aaa; border-radius:50%;
+      position:absolute; top:3px; right:3px;
+      width:12px; height:12px; border:1.5px dashed #aaa; border-radius:50%;
     }
-    .a-cell .ico { font-size:22px; margin-bottom:2px; }
-    .card-foot { padding:5px 16px; font-size:11px; color:#aaa; border-top:1px solid #eee; text-align:right; }
+    .card-foot {
+      padding:4px 12px; font-size:10px; color:#aaa;
+      font-family:"PingFang SC",sans-serif; border-top:1px solid #eee;
+      display:flex; justify-content:space-between;
+    }
+    .btn-legend {
+      display:flex; gap:4px; align-items:center;
+      font-family:"PingFang SC",sans-serif; font-size:10px; color:#666;
+    }
 
-    .answer-sheet { page-break-before:always; }
-    .answer-sheet h2 { font-size:20px; color:#2e7d32; margin-bottom:14px; border-bottom:2px solid #a5d6a7; padding-bottom:6px; }
-    table { width:100%; border-collapse:collapse; font-size:12px; margin-bottom:16px; }
+    .answer-sheet { page-break-before:always; font-family:"PingFang SC","Microsoft YaHei",sans-serif; padding:10px; }
+    .answer-sheet h2 { font-size:18px; color:#2e7d32; margin-bottom:10px; }
+    table { width:100%; border-collapse:collapse; font-size:11px; }
     th { background:#e8f5e9; }
-    th, td { border:1px solid #a5d6a7; padding:6px 8px; text-align:left; }
-    .legend { display:flex; flex-wrap:wrap; gap:10px; font-size:12px; margin-bottom:12px; }
-    .legend span { display:flex; align-items:center; gap:4px; }
-    .tips { font-size:12px; line-height:1.9; color:#555; background:#f9fbe7; border:1px solid #dce775; padding:10px 14px; border-radius:6px; }
+    th,td { border:1px solid #a5d6a7; padding:5px 7px; }
+    .ans-emoji { font-size:18px; }
+    .tips { font-size:11px; line-height:1.8; color:#555; margin-top:12px; background:#f9fbe7; padding:10px; border-radius:6px; }
   </style>
 </head>
 <body>
 
-<!-- 封面 -->
+<!-- 封面：孩子看图形，家长看小字说明 -->
 <div class="cover">
-  <h1>观察与理解 · 情境推理</h1>
-  <h2>逻辑狗大班下学期 · 专项练习（可打印）</h2>
-  <p>
-    共 6 张练习卡，对标教材《观察与理解》<br>
-    练习方法：读指导语 → 按圆钮颜色从左到右做题 → 翻到末页核对答案<br>
-    建议每张限时 <strong>50 秒</strong>
-  </p>
-  <div class="badge">配合 10 纽操作板使用 · 也可直接在答案格画圈</div>
+  <div class="big-ico">👀🧠✅</div>
+  <div class="dots-row">
+    <i class="dot d-red"></i><i class="dot d-orange"></i><i class="dot d-yellow"></i>
+    <i class="dot d-lgreen"></i><i class="dot d-green"></i><i class="dot d-lblue"></i>
+    <i class="dot d-blue"></i><i class="dot d-purple"></i><i class="dot d-pink"></i><i class="dot d-brown"></i>
+  </div>
+  <div style="font-size:48px;">🐶📋</div>
+  <div class="parent-note">
+    【家长看】观察与理解 · 纯图形版 · 10纽 · 共6张<br>
+    用法：圆钮推到底 → 插卡 → 按颜色从左到右 → 看图推钮到右边对应图案<br>
+    每张10题，限时约50秒。答案在最后一页。
+  </div>
 </div>
 
-<!-- GC-01 天气与出行 -->
+<!-- GC-01 天气 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-01 天气与出行</span><span>6 题</span></div>
-  <div class="guide">指导语：根据天气情况，判断应该穿什么、带什么或做什么准备。</div>
+  <div class="card-head">
+    <span>GC-01 ☀️🌧️❄️</span>
+    <span class="parent-hint">家长读：看天气图，选对的物品</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>☀️ 烈日当空，出去玩应该带什么？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🌧️ 外面下雨了，出门需要什么？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>❄️ 下雪了，应该穿什么？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>🌬️ 刮大风，放风筝需要什么天气？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>🏖️ 去海边游泳，天气应该？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>🌫️ 有雾霾，出门应该戴什么？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">☀️☀️🏖️👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🌧️🌧️👦🚪</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">❄️❄️👧🥶</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">💨💨🪁👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">☀️🏊🌊👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🌫️🌫️😷👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">⛈️⚡🏠👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🌈🌤️🐌👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🥶🧊👧🤧</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">☀️👦😎❓</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div><span class="ico">🧢</span>遮阳帽</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">☂️</span>雨伞</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">🧥</span>厚棉衣</div>
-        <div class="a-cell"><div class="slot"></div>有风的日子</div>
-        <div class="a-cell"><div class="slot"></div>晴天/热天</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😷</span>口罩</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">🧤</span>手套</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">🕶️</span>墨镜</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">🩴</span>凉鞋</div>
-        <div class="a-cell"><div class="slot"></div>下雪天</div>
+        <div class="a-cell"><div class="slot"></div>🧢</div>
+        <div class="a-cell"><div class="slot"></div>☂️</div>
+        <div class="a-cell"><div class="slot"></div>🧥</div>
+        <div class="a-cell"><div class="slot"></div>💨</div>
+        <div class="a-cell"><div class="slot"></div>🩴</div>
+        <div class="a-cell"><div class="slot"></div>😷</div>
+        <div class="a-cell"><div class="slot"></div>🏠</div>
+        <div class="a-cell"><div class="slot"></div>🐌</div>
+        <div class="a-cell"><div class="slot"></div>🧣</div>
+        <div class="a-cell"><div class="slot"></div>🕶️</div>
+        <div class="a-cell"><div class="slot"></div>🧤</div>
+        <div class="a-cell"><div class="slot"></div>⛄</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">教材：根据情境选择合适物品</div>
+  <div class="card-foot">
+    <div class="btn-legend">
+      <i class="dot d-red"></i><i class="dot d-orange"></i><i class="dot d-yellow"></i><i class="dot d-lgreen"></i><i class="dot d-green"></i>
+      <i class="dot d-lblue"></i><i class="dot d-blue"></i><i class="dot d-purple"></i><i class="dot d-pink"></i><i class="dot d-brown"></i>
+    </div>
+    <span>10纽</span>
+  </div>
 </div>
 
 <!-- GC-02 日常生活 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-02 日常生活</span><span>6 题</span></div>
-  <div class="guide">指导语：想一想生活中遇到这种情况，应该怎么做或用什么。</div>
+  <div class="card-head">
+    <span>GC-02 🍽️🛏️🦷</span>
+    <span class="parent-hint">家长读：看小朋友在做什么，选对的</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>🍽️ 吃饭之前，应该先做什么？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🌙 天黑了，房间里太暗，应该？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>🗑️ 吃完香蕉，果皮应该？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>🦷 早晚要做什么保护牙齿？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>📞 想打电话给妈妈，用什么？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>🛏️ 困了想睡觉，应该去？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🍽️👦❓🍚</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🌙🌙🏠😴</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🍌👦🗑️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🦷👦😁❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">📞👦👩❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">😴👦🛏️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🎨👦❓🖼️</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🚽👦🧻❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">👕👦🧺❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🌡️🤒👦❓</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div>洗手</div>
-        <div class="a-cell"><div class="slot"></div>开灯</div>
-        <div class="a-cell"><div class="slot"></div>扔进垃圾桶</div>
-        <div class="a-cell"><div class="slot"></div>刷牙</div>
-        <div class="a-cell"><div class="slot"></div>手机/电话</div>
-        <div class="a-cell"><div class="slot"></div>卧室/床上</div>
-        <div class="a-cell"><div class="slot"></div>跑步</div>
-        <div class="a-cell"><div class="slot"></div>关窗</div>
-        <div class="a-cell"><div class="slot"></div>种在土里</div>
-        <div class="a-cell"><div class="slot"></div>操场</div>
+        <div class="a-cell"><div class="slot"></div>🧼</div>
+        <div class="a-cell"><div class="slot"></div>💡</div>
+        <div class="a-cell"><div class="slot"></div>🗑️</div>
+        <div class="a-cell"><div class="slot"></div>🪥</div>
+        <div class="a-cell"><div class="slot"></div>📱</div>
+        <div class="a-cell"><div class="slot"></div>🛏️</div>
+        <div class="a-cell"><div class="slot"></div>🖌️</div>
+        <div class="a-cell"><div class="slot"></div>🧻</div>
+        <div class="a-cell"><div class="slot"></div>🧺</div>
+        <div class="a-cell"><div class="slot"></div>💊</div>
+        <div class="a-cell"><div class="slot"></div>🏃</div>
+        <div class="a-cell"><div class="slot"></div>📺</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">教材：生活常识与行为习惯</div>
+  <div class="card-foot"><div class="btn-legend">10纽 · 从左到右</div><span>GC-02</span></div>
 </div>
 
-<!-- GC-03 因果关系 -->
+<!-- GC-03 因果 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-03 因果关系</span><span>6 题</span></div>
-  <div class="guide">指导语：观察情境，想一想会发生什么，或者为什么会这样。</div>
+  <div class="card-head">
+    <span>GC-03 ⏳➡️❓</span>
+    <span class="parent-hint">家长读：看左边会发生什么，选右边结果</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>🧊 冰块放在太阳下，会变成？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🌱 给种子浇水、晒太阳，会？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>🎈 气球飞得太高，手一松会？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>📚 不认真复习，考试可能会？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>🚦 红灯亮了，行人应该？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>🍳 锅里水烧干了还在加热，会？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🧊☀️⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🌱💧☀️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🎈🎈✋❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">📚😴📝❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">🚦🔴🚶❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🍳🔥💨❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🌸🌸⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">💧🌡️❄️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🐛🐛⏳❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🧊🧊⏳❓</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div>化成水</div>
-        <div class="a-cell"><div class="slot"></div>发芽/长大</div>
-        <div class="a-cell"><div class="slot"></div>飞走</div>
-        <div class="a-cell"><div class="slot"></div>考不好</div>
-        <div class="a-cell"><div class="slot"></div>停下来等待</div>
-        <div class="a-cell"><div class="slot"></div>烧焦/着火</div>
-        <div class="a-cell"><div class="slot"></div>变得更冷</div>
-        <div class="a-cell"><div class="slot"></div>枯萎</div>
-        <div class="a-cell"><div class="slot"></div>跑过来</div>
-        <div class="a-cell"><div class="slot"></div>考满分</div>
+        <div class="a-cell"><div class="slot"></div>💧</div>
+        <div class="a-cell"><div class="slot"></div>🌻</div>
+        <div class="a-cell"><div class="slot"></div>🎈↑</div>
+        <div class="a-cell"><div class="slot"></div>😢</div>
+        <div class="a-cell"><div class="slot"></div>🛑</div>
+        <div class="a-cell"><div class="slot"></div>🔥</div>
+        <div class="a-cell"><div class="slot"></div>🍎</div>
+        <div class="a-cell"><div class="slot"></div>🧊</div>
+        <div class="a-cell"><div class="slot"></div>🦋</div>
+        <div class="a-cell"><div class="slot"></div>💦</div>
+        <div class="a-cell"><div class="slot"></div>🥀</div>
+        <div class="a-cell"><div class="slot"></div>🏆</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">教材：推导将要产生的结果</div>
+  <div class="card-foot"><div class="btn-legend">10纽</div><span>GC-03</span></div>
 </div>
 
-<!-- GC-04 情绪推理 -->
+<!-- GC-04 情绪 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-04 情绪与人物反应</span><span>6 题</span></div>
-  <div class="guide">指导语：想一想遇到这种情况，小朋友会有什么心情或反应。</div>
+  <div class="card-head">
+    <span>GC-04 😊😢😨</span>
+    <span class="parent-hint">家长读：小朋友会怎样？选表情</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>🎁 生日收到喜欢的礼物，会？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🍦 冰淇淋掉地上了，会？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>😴 在课堂上打瞌睡，说明？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>🏆 比赛得了第一名，会？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>🤕 摔破了膝盖，会？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>👻 黑暗中听到奇怪声音，会？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🎁🎂👦✨</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🍦👦💦😵</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🏆🥇👧🎉</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🤕👦🩹😣</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">🌑👻👦😱</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🧸👦💔😿</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">😴😴📚👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🎈💥👦😮</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">👫👋👦🏠</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🍕👦😋🍽️</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div><span class="ico">😊</span>高兴/开心</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😢</span>难过/伤心</div>
-        <div class="a-cell"><div class="slot"></div>很困/没睡好</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😄</span>自豪/兴奋</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😣</span>疼痛/哭</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😨</span>害怕/紧张</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😠</span>生气</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😐</span>无所谓</div>
-        <div class="a-cell"><div class="slot"></div>饿了</div>
-        <div class="a-cell"><div class="slot"></div><span class="ico">😴</span>想睡觉</div>
+        <div class="a-cell"><div class="slot"></div>😊</div>
+        <div class="a-cell"><div class="slot"></div>😢</div>
+        <div class="a-cell"><div class="slot"></div>🥳</div>
+        <div class="a-cell"><div class="slot"></div>😣</div>
+        <div class="a-cell"><div class="slot"></div>😨</div>
+        <div class="a-cell"><div class="slot"></div>😿</div>
+        <div class="a-cell"><div class="slot"></div>😴</div>
+        <div class="a-cell"><div class="slot"></div>😮</div>
+        <div class="a-cell"><div class="slot"></div>😔</div>
+        <div class="a-cell"><div class="slot"></div>😋</div>
+        <div class="a-cell"><div class="slot"></div>😠</div>
+        <div class="a-cell"><div class="slot"></div>😐</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">教材：猜表情 · 理解人物心理</div>
+  <div class="card-foot"><div class="btn-legend">10纽</div><span>GC-04</span></div>
 </div>
 
-<!-- GC-05 场所与职业 -->
+<!-- GC-05 场所职业 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-05 场所与职业</span><span>6 题</span></div>
-  <div class="guide">指导语：根据场景判断应该去哪里，或者谁来做这件事最合适。</div>
+  <div class="card-head">
+    <span>GC-05 🏫🏥🚒</span>
+    <span class="parent-hint">家长读：去哪里？找谁帮忙？</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>📖 想安静地看书，去哪里？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🤒 发烧生病了，应该找谁？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>🚒 房子着火了，谁会来救援？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>🛒 想买蔬菜和水果，去哪里？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>✈️ 要出远门坐飞机，去哪里？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>🐕 小狗生病了，应该带去？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">📖👦🤫❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🤒🌡️👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🔥🏠🚒❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🍎🥬👩❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">✈️🧳👨‍👩‍👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🐕🤒👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🚗💥👮❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">✉️📮👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🏊👦🌊❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">⛽🚗❓👦</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div>图书馆</div>
-        <div class="a-cell"><div class="slot"></div>医生</div>
-        <div class="a-cell"><div class="slot"></div>消防员</div>
-        <div class="a-cell"><div class="slot"></div>超市/菜市场</div>
-        <div class="a-cell"><div class="slot"></div>机场</div>
-        <div class="a-cell"><div class="slot"></div>宠物医院</div>
-        <div class="a-cell"><div class="slot"></div>游乐场</div>
-        <div class="a-cell"><div class="slot"></div>警察</div>
-        <div class="a-cell"><div class="slot"></div>消防员</div>
-        <div class="a-cell"><div class="slot"></div>公园</div>
+        <div class="a-cell"><div class="slot"></div>📚</div>
+        <div class="a-cell"><div class="slot"></div>👨‍⚕️</div>
+        <div class="a-cell"><div class="slot"></div>👨‍🚒</div>
+        <div class="a-cell"><div class="slot"></div>🛒</div>
+        <div class="a-cell"><div class="slot"></div>🛫</div>
+        <div class="a-cell"><div class="slot"></div>🏥🐕</div>
+        <div class="a-cell"><div class="slot"></div>👮</div>
+        <div class="a-cell"><div class="slot"></div>📮</div>
+        <div class="a-cell"><div class="slot"></div>🏊</div>
+        <div class="a-cell"><div class="slot"></div>⛽</div>
+        <div class="a-cell"><div class="slot"></div>🎡</div>
+        <div class="a-cell"><div class="slot"></div>🏫</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">教材：场所判断 · 职业匹配</div>
+  <div class="card-foot"><div class="btn-legend">10纽</div><span>GC-05</span></div>
 </div>
 
-<!-- GC-06 综合10题 -->
+<!-- GC-06 综合 -->
 <div class="card">
-  <div class="card-head"><span class="title">GC-06 综合模拟</span><span>10 题 · 限时50秒</span></div>
-  <div class="guide">指导语：听清题目，按圆钮颜色从左到右，找出正确答案。开始！</div>
+  <div class="card-head">
+    <span>GC-06 ⭐综合⭐</span>
+    <span class="parent-hint">家长读：限时50秒！从左到右推10个钮</span>
+  </div>
   <div class="card-main">
     <div class="col-q">
-      <div class="col-label">题 目 栏</div>
-      <div class="q-row"><i class="dot d-red"></i><span>🌡️ 发烧了，体温计显示很高，应？</span></div>
-      <div class="q-row"><i class="dot d-orange"></i><span>🚌 等公交车，应该在？</span></div>
-      <div class="q-row"><i class="dot d-yellow"></i><span>🌊 不会游泳掉进水里，需要？</span></div>
-      <div class="q-row"><i class="dot d-lgreen"></i><span>🎨 画画需要什么工具？</span></div>
-      <div class="q-row"><i class="dot d-green"></i><span>⏰ 早上7点，小朋友通常在？</span></div>
-      <div class="q-row"><i class="dot d-lblue"></i><span>🧹 地板脏了，用什么打扫？</span></div>
-      <div class="q-row"><i class="dot d-blue"></i><span>🔪 切水果需要什么？</span></div>
-      <div class="q-row"><i class="dot d-purple"></i><span>📮 要寄信，去哪里？</span></div>
-      <div class="q-row"><i class="dot d-pink"></i><span>🌡️ 冬天手很冷，应该？</span></div>
-      <div class="q-row"><i class="dot d-brown"></i><span>🚗 汽车没油了，去哪里加油？</span></div>
+      <div class="q-row"><i class="dot d-red"></i><span class="scene">🌡️🤒👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-orange"></i><span class="scene">🚌🚏👦⏳</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-yellow"></i><span class="scene">🌊😱👦❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lgreen"></i><span class="scene">🎨👦🖼️❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-green"></i><span class="scene">⏰7️⃣☀️👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-lblue"></i><span class="scene">🧹🪣🏠❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-blue"></i><span class="scene">🍎🔪👩❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-purple"></i><span class="scene">🥶🧤👧❓</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-pink"></i><span class="scene">🚦🟢🚶👦</span><span class="arrow">→</span></div>
+      <div class="q-row"><i class="dot d-brown"></i><span class="scene">🍞🥛👦❓</span><span class="arrow">→</span></div>
     </div>
     <div class="col-a">
-      <div class="col-label">答 案 栏</div>
       <div class="a-grid">
-        <div class="a-cell"><div class="slot"></div>看医生/吃药</div>
-        <div class="a-cell"><div class="slot"></div>站台</div>
-        <div class="a-cell"><div class="slot"></div>呼救/救生圈</div>
-        <div class="a-cell"><div class="slot"></div>画笔/颜料</div>
-        <div class="a-cell"><div class="slot"></div>起床/吃早餐</div>
-        <div class="a-cell"><div class="slot"></div>扫帚/拖把</div>
-        <div class="a-cell"><div class="slot"></div>水果刀</div>
-        <div class="a-cell"><div class="slot"></div>邮局</div>
-        <div class="a-cell"><div class="slot"></div>戴手套/搓手</div>
-        <div class="a-cell"><div class="slot"></div>加油站</div>
-        <div class="a-cell"><div class="slot"></div>睡觉</div>
-        <div class="a-cell"><div class="slot"></div>马路中间</div>
+        <div class="a-cell"><div class="slot"></div>💊</div>
+        <div class="a-cell"><div class="slot"></div>🚏</div>
+        <div class="a-cell"><div class="slot"></div>🛟</div>
+        <div class="a-cell"><div class="slot"></div>🖌️</div>
+        <div class="a-cell"><div class="slot"></div>🥣</div>
+        <div class="a-cell"><div class="slot"></div>🧹</div>
+        <div class="a-cell"><div class="slot"></div>🔪</div>
+        <div class="a-cell"><div class="slot"></div>🧤</div>
+        <div class="a-cell"><div class="slot"></div>🚶</div>
+        <div class="a-cell"><div class="slot"></div>🥛</div>
+        <div class="a-cell"><div class="slot"></div>😴</div>
+        <div class="a-cell"><div class="slot"></div>🏃</div>
       </div>
     </div>
   </div>
-  <div class="card-foot">赛前必练 · 10 纽综合</div>
+  <div class="card-foot"><div class="btn-legend">10纽 · 赛前必练</div><span>GC-06</span></div>
 </div>
 
-<!-- 答案页 -->
+<!-- 家长答案页（只有这页有文字） -->
 <div class="answer-sheet">
-  <h2>答案对照表（家长用）</h2>
-  <div class="legend">
-    <span><i class="dot d-red"></i>红</span>
-    <span><i class="dot d-orange"></i>橙</span>
-    <span><i class="dot d-yellow"></i>黄</span>
-    <span><i class="dot d-lgreen"></i>浅绿</span>
-    <span><i class="dot d-green"></i>绿</span>
-    <span><i class="dot d-lblue"></i>浅蓝</span>
-    <span><i class="dot d-blue"></i>蓝</span>
-    <span><i class="dot d-purple"></i>紫</span>
-    <span><i class="dot d-pink"></i>粉</span>
-    <span><i class="dot d-brown"></i>棕</span>
-  </div>
+  <h2>📋 答案页（仅家长看）</h2>
+  <p style="font-size:11px;color:#888;margin-bottom:8px;">答案栏12格，从左到右、从上到下编号1-12。圆钮颜色对应格子号如下：</p>
   <table>
-    <tr><th>卡号</th><th>主题</th><th>答案（答案栏格子序号，从左到右、从上到下数）</th></tr>
-    <tr><td>GC-01</td><td>天气与出行</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6</td></tr>
-    <tr><td>GC-02</td><td>日常生活</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6</td></tr>
-    <tr><td>GC-03</td><td>因果关系</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6</td></tr>
-    <tr><td>GC-04</td><td>情绪推理</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6</td></tr>
-    <tr><td>GC-05</td><td>场所与职业</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6</td></tr>
-    <tr><td>GC-06</td><td>综合10题</td><td>红→1 &nbsp; 橙→2 &nbsp; 黄→3 &nbsp; 浅绿→4 &nbsp; 绿→5 &nbsp; 浅蓝→6 &nbsp; 蓝→7 &nbsp; 紫→8 &nbsp; 粉→9 &nbsp; 棕→10</td></tr>
+    <tr><th>卡</th><th>红</th><th>橙</th><th>黄</th><th>浅绿</th><th>绿</th><th>浅蓝</th><th>蓝</th><th>紫</th><th>粉</th><th>棕</th></tr>
+    <tr><td>GC-01</td><td class="ans-emoji">1🧢</td><td>2☂️</td><td>3🧥</td><td>4💨</td><td>5🩴</td><td>6😷</td><td>7🏠</td><td>8🐌</td><td>9🧣</td><td>10🕶️</td></tr>
+    <tr><td>GC-02</td><td>1🧼</td><td>2💡</td><td>3🗑️</td><td>4🪥</td><td>5📱</td><td>6🛏️</td><td>7🖌️</td><td>8🧻</td><td>9🧺</td><td>10💊</td></tr>
+    <tr><td>GC-03</td><td>1💧</td><td>2🌻</td><td>3🎈↑</td><td>4😢</td><td>5🛑</td><td>6🔥</td><td>7🍎</td><td>8🧊</td><td>9🦋</td><td>10💦</td></tr>
+    <tr><td>GC-04</td><td>1😊</td><td>2😢</td><td>3🥳</td><td>4😣</td><td>5😨</td><td>6😿</td><td>7😴</td><td>8😮</td><td>9😔</td><td>10😋</td></tr>
+    <tr><td>GC-05</td><td>1📚</td><td>2👨‍⚕️</td><td>3👨‍🚒</td><td>4🛒</td><td>5🛫</td><td>6🏥🐕</td><td>7👮</td><td>8📮</td><td>9🏊</td><td>10⛽</td></tr>
+    <tr><td>GC-06</td><td>1💊</td><td>2🚏</td><td>3🛟</td><td>4🖌️</td><td>5🥣</td><td>6🧹</td><td>7🔪</td><td>8🧤</td><td>9🚶</td><td>10🥛</td></tr>
   </table>
   <div class="tips">
-    <strong>练习建议：</strong><br>
-    · 先读指导语，等孩子说「准备好了」再开始计时。<br>
-    · 情境推理核心：问自己「在这种情况下，人会怎么做/需要什么/会怎样」。<br>
-    · 每天练 1～2 张，GC-06 限时 50 秒做两遍，第二遍通常更快。<br>
-    · 做完问孩子「为什么」，比背答案更重要。
+    <strong>怎么带孩子练（不用认字）：</strong><br>
+    ① 您看图说一句话，比如「大太阳，去海边，要带什么？」<br>
+    ② 孩子指右边图案，再推到对应圆钮位置<br>
+    ③ 圆钮顺序：🔴🟠🟡🟢绿浅🟢🟦浅🔵🟣🩷🟤（共10个，从左到右）<br>
+    ④ 卡面没有文字，孩子只看图；只有本页和封面有小字给您参考
   </div>
 </div>
 
