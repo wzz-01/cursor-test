@@ -13,10 +13,12 @@
 
 ## 文件
 
+- `省区销售管理日简报_智能体训练说明.md`：**给新智能体的精简训练说明（推荐）**
 - `01_ads_sales_daily_brief.sql`：主宽表 DDL
 - `02_detail_tables.sql`：三张明细表 DDL
 - `03_field_dictionary.md`：字段字典与口径待确认项
 - `04_agent_prompt_read_table.md`：宽表就绪后给智能体的取数出 PDF 指令
+- `05_new_agent_brief.md`：历史详细版说明书（含纠偏过程，可作归档）
 
 ## 推荐落地顺序
 
