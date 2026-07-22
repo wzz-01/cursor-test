@@ -51,7 +51,9 @@
 
 - **所有销售额/同比/年累计主金额一律用 `amt_yesterday`**（方案1）
 - **不要用 `amt_last_month` 做同比增额/增速**（同比主金额仍用 `amt_yesterday`）
-- **例外**：③「同期实际进度」分母必须用上财年全年 `SUM(amt_last_month)`
+- **例外**：
+  - ③「同期实际进度」分母必须用上财年全年 `SUM(amt_last_month)`
+  - ②近3月预警中，上月/上上月销额必须用 `SUM(amt_last_month)`；仅当月 D0 用 `amt_yesterday`
 - 样例句式中的「经销」= `cust_group_classify='经销商'`
 - 「直营」= `cust_group_classify='直营'`
 - 「电商」可附注，不进截图主句也可
