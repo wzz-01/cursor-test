@@ -19,12 +19,11 @@
 - 门店数：`COUNT(DISTINCT mendian_code)`
 - 人数：`COUNT(DISTINCT ry_code)`
 - 明细：`ry_name | COUNT(DISTINCT c_code) | COUNT(DISTINCT mendian_code)` 按人聚合
-- 负责人：`is_leader=1` 再按销售组汇总
+- 负责人：底表暂无 `is_leader`，后续用 `ry_position_new` 规则另加
 
 覆盖率分母（应拜访客户/门店）**本底表没有**，需另表或暂标「暂无法计算」。
 
-## 仍建议你确认的 3 点
+## 仍建议你确认的 2 点
 
 1. **客户数用 `c_code` 还是 `mendian_code`？** 样句「拜访客户」更像经销客户 `c_code`；「拜访门店」用 `mendian_code`。
-2. **`is_leader` 岗位规则**是否用「负责/主管/经理」关键字，还是人事表有正式字段。
-3. **同销售组多省区**时，兜底维 `MAX(省区)` 是否可接受；不可则改指定规则。
+2. **同销售组多省区**时，兜底维 `MAX(省区)` 是否可接受；不可则改指定规则。
