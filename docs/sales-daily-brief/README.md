@@ -11,7 +11,7 @@
 | ③ | 年度目标 | `dwd_sales_fiveyears` | 已锁定 |
 | ④ | 昨日订单 | `dwd_sales_daily_detail` | 已锁定 |
 | ⑤ | 费用使用情况 | 待探表（见 `06_…`） | 对接中 |
-| ⑥ | 昨日拜访情况 | 待探表（优先 `ods_sfa`） | 对接中 |
+| ⑥ | 昨日拜访情况 | 源 `dwd_sales_hds_visit_detail` → 底表制作中 | 对接中 |
 
 ## 表清单（中间层，可选）
 
@@ -26,6 +26,7 @@
 
 - `省区销售管理日简报_智能体训练说明.md`：**给智能体的主训练说明（推荐）**，含①～⑥
 - `06_hermes_探表_费用拜访.md`：**对接⑤⑥ 新数据源**——探表话术 + 锁定口径话术
+- `07_visit_base_etl.sql` / `07_visit_base_optimize.md`：**⑥拜访底表**优化 ETL 与说明
 - `01_ads_sales_daily_brief.sql`：主宽表 DDL
 - `02_detail_tables.sql`：三张明细表 DDL
 - `03_field_dictionary.md`：字段字典与口径待确认项
