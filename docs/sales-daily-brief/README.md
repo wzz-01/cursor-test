@@ -26,7 +26,9 @@
 
 - `省区销售管理日简报_智能体训练说明.md`：**给智能体的主训练说明（推荐）**，含①～⑥
 - `06_hermes_探表_费用拜访.md`：**对接⑤⑥ 新数据源**——探表话术 + 锁定口径话术
-- `07_visit_base_etl.sql` / `07_visit_base_optimize.md`：**⑥拜访底表**优化 ETL 与说明
+- `07_visit_base_etl.sql`：拜访底表灌数（对齐当前查询）
+- `08_dwd_sales_hds_visit_base_ddl.sql`：拜访底表建表（建表人 xj）
+- `07_visit_base_optimize.md`：子查询优化说明
 - `01_ads_sales_daily_brief.sql`：主宽表 DDL
 - `02_detail_tables.sql`：三张明细表 DDL
 - `03_field_dictionary.md`：字段字典与口径待确认项
