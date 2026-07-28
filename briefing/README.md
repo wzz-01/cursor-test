@@ -1,82 +1,65 @@
-# 飞书智能体：文字结论 → PNG 经营简报
+# 飞书智能体：多省区日销售简报 → PNG
 
-目标：智能体继续产出你现在的文字结论，但**最终发给用户的是一张 PNG 简报**（类似销售经营晨报），数字必须准确，不能靠文生图“画”出来。
+智能体继续负责查数；要简报时，把任意省区的结论填进**同一模板**再出 PNG。
 
-## 推荐链路（最稳）
+详细架构见：[`MULTI_REGION.md`](MULTI_REGION.md)
+
+## 推荐链路
 
 ```
-原始数据/SQL结论
+用户：给我河南经销省区截至到昨日的销售简报
     ↓
-智能体整理成「简报 JSON」（固定字段）
+意图解析：report_type + region + as_of_date
     ↓
-调用出图服务 / 代码节点（HTML 模板截图）
+现有查询能力（河南 / 辽宁 / …）
     ↓
-上传飞书图片 → 发送 PNG
+填模：日销售简报 JSON（不绑死某一省）
+    ↓
+render_pillow / HTTP /render → PNG
+    ↓
+飞书发图
 ```
 
-本仓库已提供：
+## 文件
 
 | 文件 | 作用 |
 |------|------|
-| `briefing/data.example.json` | 用你给的辽宁结论填好的示例数据 |
-| `briefing/template.html` | 晨报风格版式模板 |
-| `briefing/render_pillow.py` | JSON → PNG（推荐，Pillow 直绘，数字不变形） |
-| `briefing/render.py` | JSON → HTML → Chrome 截图（可选） |
-| `briefing/template.html` | HTML 版式（Chrome 方案用） |
-| `briefing/AGENT_PROMPT.md` | 可直接贴进智能体的提示词 |
+| `MULTI_REGION.md` | 多省区 × 多报告接入说明（先看这个） |
+| `AGENT_ORCHESTRATOR.md` | 总控提示词 |
+| `AGENT_PROMPT.md` | 查询结论 → 日销售 JSON |
+| `schema.daily_sales.json` | 字段定义 |
+| `data.example.json` | 辽宁真实示例 |
+| `data.henan.example.json` | 河南占位示例（演示换省区） |
+| `render_pillow.py` | JSON → PNG |
+| `server.py` | 可选 HTTP 出图服务 |
+| `template.html` / `render.py` | Chrome 截图备选 |
 
-本地试跑：
+## 本地试跑
 
 ```bash
+# 辽宁示例
 python3 briefing/render_pillow.py \
   --data briefing/data.example.json \
-  --out briefing/output/liaoning-2026-07-27.png
+  --out briefing/output/liaoning.png
+
+# 河南占位（上线前换成真实查询 JSON）
+python3 briefing/render_pillow.py \
+  --data briefing/data.henan.example.json \
+  --out briefing/output/henan.png
 ```
 
-## 扣子 / 飞书智能体怎么接
-
-### 1. 改智能体提示词
-
-要求模型**只输出 JSON**（或先输出 JSON，再由工作流取用），字段对齐 `data.example.json`。  
-完整提示词见 `AGENT_PROMPT.md`。
-
-### 2. 增加「出图」节点
-
-任选其一：
-
-**A. 代码节点（推荐）**  
-把 `render_pillow.py` 部署成小服务 / 工作流代码节点：
+可选服务：
 
 ```bash
-python3 render_pillow.py --data /tmp/input.json --out /tmp/out.png
+pip install flask pillow
+python3 briefing/server.py
+# POST http://host:8787/render
 ```
 
-**B. HTTP 请求节点**  
-`POST /render-briefing`，body 为简报 JSON，返回 PNG 二进制或可访问 URL。
+## 你要改智能体的最少三步
 
-**C. 不要用**  
-纯「图像生成 / 即梦 / 文生图」节点写 KPI——百分比和排名很容易画错。
+1. 加上总控提示词：识别「简报」意图，并抽出省区、日期  
+2. 简报分支：查数 → 填 JSON → 调渲染  
+3. 普通问答分支：保持你现在的文字查数逻辑不变
 
-### 3. 发到飞书
-
-1. 调用开放接口上传图片，拿到 `image_key`
-2. 消息类型选 `image`，或把图嵌进消息卡片
-3. 可选：同时附一段极短文字摘要（1～2 句），方便检索
-
-## 你的四段结论如何映射到版式
-
-| 原文段落 | 简报区块 |
-|----------|----------|
-| ① 销售额/达成/排名/分区高低 | 顶部 4 个 KPI + `01 销售组达成对比` |
-| ② 连续三月下滑城市/组/客户、后20% | `02 连续三月同比下滑` + 预警 |
-| ③ 年累计进度/排名 | `03 年累计进度` |
-| ④ 昨日订单与客户明细 | `04 昨日订单` + 今日动作 |
-
-缺数值的销售组（仅有「后20%」描述）在图里显示为 `—`，并用备注标明，避免假数字。
-
-## 最小改造清单
-
-1. 智能体输出改为严格 JSON（可用本仓库示例字段）
-2. 工作流增加「渲染 PNG」一步
-3. 提示词末尾加：`最终必须发送 PNG 简报，不要只发长文`
-4. 固定每日同一模板，只替换 JSON，保证风格稳定
+其他报告类型先文字输出；要出图时再加新 `report_type` + 新模板，日销售链路不用重做。

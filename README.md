@@ -1,10 +1,11 @@
 # cursor-test
 
-## 经营简报 PNG 渲染
+## 经营简报 PNG（多省区）
 
-将飞书智能体的文字市场结论，渲染成类似「销售经营晨报」的 PNG 简报。
+飞书智能体查数后，按统一晨报模板输出任意省区的日销售 PNG 简报。
 
-详见：[`briefing/README.md`](briefing/README.md)
+- 接入说明：[`briefing/MULTI_REGION.md`](briefing/MULTI_REGION.md)
+- 快速开始：[`briefing/README.md`](briefing/README.md)
 
 ```bash
 python3 briefing/render_pillow.py \

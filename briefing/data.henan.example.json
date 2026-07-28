@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "title": "河南经销省区经营简报",
+    "subtitle": "销售经营日更",
+    "region": "河南经销省区",
+    "as_of_date": "2026-07-27",
+    "generated_at": "2026-07-28 08:00",
+    "owner": "河南经销省区销售管理"
+  },
+  "headline": "示例：把智能体查询到的河南经销省区结论填入本结构即可出 PNG；下列数字仅为占位，正式使用时必须替换为真实查询结果。",
+  "kpis": [
+    {
+      "label": "销售额",
+      "value": "—",
+      "sub": "同比 —",
+      "badge": "达成率 —",
+      "tone": "warn"
+    },
+    {
+      "label": "大单品达成率",
+      "value": "—",
+      "sub": "待查询回填",
+      "badge": "待回填",
+      "tone": "warn"
+    },
+    {
+      "label": "增长率",
+      "value": "—",
+      "sub": "增速排名 —",
+      "badge": "待回填",
+      "tone": "warn"
+    },
+    {
+      "label": "达成率排名",
+      "value": "—",
+      "sub": "省区单位排名",
+      "badge": "待回填",
+      "tone": "warn"
+    }
+  ],
+  "section_01": {
+    "title": "销售组达成对比",
+    "items": [
+      { "name": "销售组A（示例）", "rate": null, "note": "查询后回填" },
+      { "name": "销售组B（示例）", "rate": null, "note": "查询后回填" }
+    ]
+  },
+  "section_02": {
+    "title": "连续三月同比下滑",
+    "cities": [],
+    "groups": [],
+    "customers": [],
+    "bottom20_groups": []
+  },
+  "section_03": {
+    "title": "年累计进度",
+    "sales": "—",
+    "delta": "—",
+    "progress": "—",
+    "peer_progress": "—",
+    "yoy": "—",
+    "progress_rank": null,
+    "growth_rank": null,
+    "unit_count": null
+  },
+  "section_04": {
+    "title": "昨日订单（7月27日）",
+    "order_amount": "—",
+    "order_qty": null,
+    "budget_share": "—",
+    "budget_base": "—",
+    "no_order_groups_5d": [],
+    "no_order_customers_month": [],
+    "yesterday_customers": []
+  },
+  "warnings": [
+    "此文件仅演示多省区共用模板；上线前用河南真实查询结果替换全部字段"
+  ],
+  "actions": [
+    "用户说「给我河南经销省区截至到昨日的销售简报」→ 查数 → 填本 schema → 渲染 PNG"
+  ],
+  "footer": {
+    "sources": "与智能体现有查询口径一致",
+    "note": "占位示例，非真实经营数据"
+  }
+}
