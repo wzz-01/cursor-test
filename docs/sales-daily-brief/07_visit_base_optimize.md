@@ -1,17 +1,14 @@
 # ⑥拜访底表优化说明
 
-源 SQL 基于 `hive.dw.dwd_sales_hds_visit_detail`。完整可跑脚本见 `07_visit_base_etl.sql`。
+源 SQL 基于 `hive.dw.dwd_sales_hds_visit_detail`。完整脚本见 `07_visit_base_etl.sql`（**保持原稿子查询写法**）。
 
-## 建议改什么
+## 相对原稿改了什么
 
-| 问题 | 风险 | 改法 |
-|------|------|------|
-| `c_code` 的 CASE 在 SELECT + 两个 JOIN ON 里写了 3 遍 | 难维护、易改漏、重复计算 | CTE `visit_store` 只算一次，后面一律 `v.c_code` |
-| `LEFT JOIN md` 后在 WHERE 写 `md.store_cooperate_status=1` 等 | 实质变 INNER，且误导读 SQL 的人 | 改成 `INNER JOIN`，过滤放在 `ON`/`WHERE` 意图一致处 |
-| `DATE(vs.visit_date) >= …` | 可能无法分区裁剪，全表扫 | `visit_date >= d AND visit_date < d+1`（全量用 `>= '2024-07-01'`） |
-| `J = DISTINCT 大区,省区,销售组` 再按销售组关联 | 同一销售组多省区时**行数放大** | `GROUP BY 销售组` 压成 1 行（或业务指定主省区规则） |
-| 每次出结论都跨 `jdbc_sqlserve` | 慢、不稳定 | **先物化底表**，智能体只读 `market_db.dwd_sales_visit_detail` |
-| 缺「是否负责人」 | ⑥样句「负责人拜访数量」不好算 | 底表加 `is_leader`（岗位关键字可后再改） |
+| 问题 | 改法（子查询形式） |
+|------|-------------------|
+| `c_code` CASE 写 3 遍 | 内层子查询 `vs` 算一次，外层 `vs.c_code` 关联 `c` / `dim_cust` |
+| `J = DISTINCT 大区,省区,销售组` 易撑行 | 子查询 `J` 改为 `GROUP BY 销售组` + `MAX(大区/省区)` |
+| 其余过滤、字段别名、LEFT JOIN 顺序 | **保持你原形式** |
 
 ## 建议落表字段（给智能体）
 
