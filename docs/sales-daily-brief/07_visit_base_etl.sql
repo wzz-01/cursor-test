@@ -1,22 +1,26 @@
 -- 拜访底表：建表 + 按当前查询灌数
 -- 建表人：xj
+-- 注意：INSERT 列顺序须与建表字段顺序一致（KEY 前缀在前）
 
 -- ---------- 1）建表 ----------
 CREATE TABLE IF NOT EXISTS market_db.dwd_sales_hds_visit_base (
+    -- KEY 前缀（顺序必须与 DUPLICATE KEY 一致）
+    riqi                DATE           NOT NULL COMMENT '拜访业务日',
+    c_shengqu           VARCHAR(128)   NULL COMMENT '省区',
+    mendian_code        VARCHAR(64)    NULL COMMENT '门店编码',
+    ry_code             VARCHAR(64)    NULL COMMENT '人员编码',
+
     -- 时间相关
     yuefen              VARCHAR(10)    NULL COMMENT '业务月（月初，yyyy-MM-01）',
-    riqi                DATE           NOT NULL COMMENT '拜访业务日',
     vs_visit_type       VARCHAR(64)    NULL COMMENT '拜访类型',
 
     -- 门店相关
-    mendian_code        VARCHAR(64)    NULL COMMENT '门店编码',
     mendian_name        VARCHAR(256)   NULL COMMENT '门店名称',
     mendian_type        VARCHAR(64)    NULL COMMENT '门店类型',
     c_code              VARCHAR(64)    NULL COMMENT '经销客户编码（映射后）',
 
     -- 架构相关
     c_daqu              VARCHAR(128)   NULL COMMENT '大区',
-    c_shengqu           VARCHAR(128)   NULL COMMENT '省区',
     c_xiaoshouzu        VARCHAR(128)   NULL COMMENT '销售组',
     c_qudao             VARCHAR(64)    NULL COMMENT '直营经销',
     is_hexin1           VARCHAR(64)    NULL COMMENT '核心客户标签a',
@@ -24,7 +28,6 @@ CREATE TABLE IF NOT EXISTS market_db.dwd_sales_hds_visit_base (
     c_kehu_type         VARCHAR(64)    NULL COMMENT '客户类型',
 
     -- 人员相关
-    ry_code             VARCHAR(64)    NULL COMMENT '人员编码',
     ry_name             VARCHAR(128)   NULL COMMENT '人员姓名',
     vs_emp_position     VARCHAR(128)   NULL COMMENT '拜访表岗位',
     org_name            VARCHAR(256)   NULL COMMENT '组织名称',
@@ -49,29 +52,36 @@ PROPERTIES (
 );
 
 
--- ---------- 2）灌数（字段顺序与建表一致；末列 etl_time） ----------
+-- ---------- 2）灌数（SELECT 列顺序 = 建表字段顺序） ----------
 INSERT INTO market_db.dwd_sales_hds_visit_base
 SELECT
--- 时间相关
-DATE_FORMAT(vs.visit_date, '%Y-%m-01') AS 'yuefen', DATE(vs.visit_date) AS 'riqi',
-vs.visit_type AS 'vs_visit_type',
+    DATE(vs.visit_date) AS riqi,
+    COALESCE(dim_cust.province_region_name, c.省区, J.省区) AS c_shengqu,
+    vs.customer_code AS mendian_code,
+    ry.emp_code AS ry_code,
 
--- 门店相关
-vs.customer_code AS 'mendian_code', vs.customer_name AS 'mendian_name', COALESCE(vs.store_type,'未知') AS 'mendian_type',
-vs.c_code AS 'c_code',
+    DATE_FORMAT(vs.visit_date, '%Y-%m-01') AS yuefen,
+    vs.visit_type AS vs_visit_type,
 
--- 架构相关
-COALESCE(dim_cust.region_name, c.大区, J.大区) AS c_daqu,
-COALESCE(dim_cust.province_region_name, c.省区 ,J.省区 ) AS c_shengqu,
-COALESCE(dim_cust.sales_group_name, c.销售组, vs.store_dept_name) AS c_xiaoshouzu,
-c.直营经销 AS c_qudao, c.核心客户标签a AS is_hexin1, c.核心客户标签 AS c_hexin1_type, c.客户类型 AS c_kehu_type,
+    vs.customer_name AS mendian_name,
+    COALESCE(vs.store_type, '未知') AS mendian_type,
+    vs.c_code AS c_code,
 
--- 人员相关
-ry.emp_code AS 'ry_code', ry.emp_name AS 'ry_name', vs.emp_position AS 'vs_emp_position' , ry.org_name AS 'org_name',
-ry.person_belong AS 'ry_positiontype', COALESCE(ry.emp_position, vs.emp_position, ry.emp_job) AS 'ry_position_new',
-CASE WHEN vs.is_finished='1' THEN 1 ELSE 0 END AS 'vs_is_finished',
+    COALESCE(dim_cust.region_name, c.大区, J.大区) AS c_daqu,
+    COALESCE(dim_cust.sales_group_name, c.销售组, vs.store_dept_name) AS c_xiaoshouzu,
+    c.直营经销 AS c_qudao,
+    c.核心客户标签a AS is_hexin1,
+    c.核心客户标签 AS c_hexin1_type,
+    c.客户类型 AS c_kehu_type,
 
-NOW() AS etl_time
+    ry.emp_name AS ry_name,
+    vs.emp_position AS vs_emp_position,
+    ry.org_name AS org_name,
+    ry.person_belong AS ry_positiontype,
+    COALESCE(ry.emp_position, vs.emp_position, ry.emp_job) AS ry_position_new,
+    CASE WHEN vs.is_finished = '1' THEN 1 ELSE 0 END AS vs_is_finished,
+
+    NOW() AS etl_time
 
 FROM (
     -- 拜访底表
