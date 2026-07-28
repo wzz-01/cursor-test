@@ -2,7 +2,8 @@
 
 智能体继续负责查数；要简报时，把任意省区的结论填进**同一模板**再出 PNG。
 
-详细架构见：[`MULTI_REGION.md`](MULTI_REGION.md)
+- **逐步操作（推荐先看）：** [`STEP_BY_STEP.md`](STEP_BY_STEP.md)
+- 架构说明：[`MULTI_REGION.md`](MULTI_REGION.md)
 
 ## 推荐链路
 
