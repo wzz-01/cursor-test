@@ -34,21 +34,57 @@ PAGE_BG = (250, 248, 242)
 WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
 
+def _ensure_kaiti_font() -> Path | None:
+    """确保有可用楷体：优先系统楷体，否则下载开源霞鹜文楷 Bold。"""
+    script_font = Path(__file__).resolve().parent / "fonts" / "LXGWWenKai-Bold.ttf"
+    candidates = [
+        script_font,
+        Path("/mnt/c/Windows/Fonts/simkai.ttf"),
+        Path("/mnt/c/Windows/Fonts/SIMKAI.TTF"),
+        Path("/mnt/c/Windows/Fonts/STKAITI.TTF"),
+        Path("/mnt/c/Windows/Fonts/STKaiti.ttf"),
+        Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts" / "simkai.ttf",
+        Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts" / "STKAITI.TTF",
+    ]
+    for p in candidates:
+        if p.exists() and p.stat().st_size > 100_000:
+            return p
+
+    script_font.parent.mkdir(parents=True, exist_ok=True)
+    urls = [
+        "https://cdn.jsdelivr.net/gh/lxgw/LxgwWenKai@v1.330/fonts/TTF/LXGWWenKai-Bold.ttf",
+        "https://github.com/lxgw/LxgwWenKai/releases/download/v1.330/LXGWWenKai-Bold.ttf",
+    ]
+    import urllib.request
+
+    for url in urls:
+        try:
+            print(f"正在下载楷体字体: {url}")
+            urllib.request.urlretrieve(url, script_font)
+            if script_font.exists() and script_font.stat().st_size > 1_000_000:
+                print(f"楷体字体已就绪: {script_font}")
+                return script_font
+        except Exception as exc:  # noqa: BLE001
+            print(f"下载失败: {exc}")
+    return None
+
+
 def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[str, int]]:
     """family: yahei=微软雅黑, heiti=黑体, kaiti=楷体。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
+    bundled = Path(__file__).resolve().parent / "fonts"
 
     def win_set(root: Path) -> list[tuple[str, int]]:
         if family == "kaiti":
             return [
-                (str(root / "simkai.ttf"), 0),  # 楷体
+                (str(bundled / "LXGWWenKai-Bold.ttf"), 0),  # 霞鹜文楷（楷体风格，可打包）
+                (str(root / "simkai.ttf"), 0),
                 (str(root / "SIMKAI.TTF"), 0),
                 (str(root / "STKAITI.TTF"), 0),
                 (str(root / "STKaiti.ttf"), 0),
-                (str(root / "simhei.ttf"), 0),
-                (str(root / "msyhbd.ttc"), 0),
+                (str(root / "simkai.ttc"), 0),
             ]
         if family == "heiti":
             return [
@@ -71,13 +107,15 @@ def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[st
         ]
 
     if family == "kaiti":
+        # 先确保字体文件存在（可能触发下载）
+        ensured = _ensure_kaiti_font()
         linux = [
+            (str(ensured), 0) if ensured else ("", 0),
+            (str(bundled / "LXGWWenKai-Bold.ttf"), 0),
             ("/usr/share/fonts/truetype/arphic/ukai.ttc", 0),
-            ("/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc", 0),
-            ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
-            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
         ]
-    elif family == "heiti":
+        return [c for c in win_set(win_fonts) + win_set(wsl_fonts) + linux if c[0]]
+    if family == "heiti":
         linux = [
             ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
             ("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 0),
@@ -92,23 +130,32 @@ def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[st
     return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
+# 记录实际加载到的字体路径，便于排查“看起来不像楷体”
+_LOADED_FONT_PATHS: dict[str, str] = {}
+
+
 @lru_cache(maxsize=64)
 def load_font(size: int, bold: bool = False, family: str = "yahei"):
     last_error = None
     for path, index in _font_candidates(bold=bold, family=family):
-        if not Path(path).exists():
+        if not path or not Path(path).exists():
             continue
         try:
-            return ImageFont.truetype(path, size=size, index=index)
+            font = ImageFont.truetype(path, size=size, index=index)
         except Exception as exc:  # noqa: BLE001
             last_error = exc
             try:
-                return ImageFont.truetype(path, size=size)
+                font = ImageFont.truetype(path, size=size)
             except Exception as exc2:  # noqa: BLE001
                 last_error = exc2
                 continue
+        key = f"{family}:{size}:{bold}"
+        _LOADED_FONT_PATHS[key] = path
+        if family == "kaiti":
+            print(f"[font] 楷体已加载: {path} @ {size}px")
+        return font
     raise RuntimeError(
-        "未找到中文字体（雅黑/黑体/楷体）。WSL 请确认 /mnt/c/Windows/Fonts 下有 msyh.ttc / simkai.ttf。"
+        "未找到楷体/雅黑字体。请确认存在 Windows 楷体 simkai.ttf，或允许脚本下载霞鹜文楷。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
 
@@ -185,16 +232,19 @@ class Drawer:
             lines.append(current)
         return lines
 
-    def draw_text(self, x: int, y: int, text: str, font, fill, max_width: int | None = None) -> int:
+    def draw_text(self, x: int, y: int, text: str, font, fill, max_width: int | None = None, stroke: int = 0) -> int:
+        kwargs = {}
+        if stroke > 0:
+            kwargs = {"stroke_width": stroke, "stroke_fill": fill}
         if max_width is None:
-            self.draw.text((x, y), text, font=font, fill=fill)
+            self.draw.text((x, y), text, font=font, fill=fill, **kwargs)
             bbox = font.getbbox(text or " ")
             return bbox[3] - bbox[1]
         lines = self.wrap(text, font, max_width)
         bbox = font.getbbox("字")
         line_h = bbox[3] - bbox[1] + 4
         for i, line in enumerate(lines):
-            self.draw.text((x, y + i * line_h), line, font=font, fill=fill)
+            self.draw.text((x, y + i * line_h), line, font=font, fill=fill, **kwargs)
         return len(lines) * line_h
 
     def round_rect(self, box, fill, outline=None, radius=14, width=1):
