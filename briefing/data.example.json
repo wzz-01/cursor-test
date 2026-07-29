@@ -11,37 +11,22 @@
     "data_cutoff": "07:30",
     "owner": "辽宁省区销售管理"
   },
-  "headline": "截至7月27日销售额310万、达成率65.9%，进度与增速均处全国后列；大连分区领先，沈阳分区垫底，需盯紧连续下滑城市与后20%销售组。",
-  "kpis": [
-    {
-      "label": "销售额",
-      "value": "310万",
-      "sub": "同比 -22万",
-      "badge": "达成率 65.9%",
-      "tone": "warn"
+  "focus": "聚焦预算进度、客户下单与一线执行",
+  "performance": {
+    "overall": {
+      "budget": "—",
+      "sales": "310万",
+      "achieve_rate": "65.9%",
+      "growth_rate": "-6.8%"
     },
-    {
-      "label": "大单品达成率",
-      "value": "44.8%",
-      "sub": "低于整体达成",
-      "badge": "重点关注",
-      "tone": "danger"
-    },
-    {
-      "label": "增长率",
-      "value": "-6.8%",
-      "sub": "增速排名第33位",
-      "badge": "负增长",
-      "tone": "danger"
-    },
-    {
-      "label": "达成率排名",
-      "value": "第35位",
-      "sub": "35个省区单位",
-      "badge": "末位",
-      "tone": "danger"
+    "base": {
+      "budget": "—",
+      "sales": "—",
+      "achieve_rate": "44.8%",
+      "growth_rate": "—"
     }
-  ],
+  },
+  "headline": "截至7月27日销售额310万、达成率65.9%，进度与增速均处全国后列；大连分区领先，沈阳分区垫底，需盯紧连续下滑城市与后20%销售组。",
   "section_01": {
     "title": "销售组达成对比",
     "items": [
@@ -79,7 +64,7 @@
   },
   "section_04": {
     "title": "昨日订单（7月27日）",
-    "order_amount": "2万元",
+    "order_amount": "17920元",
     "order_qty": 266,
     "budget_share": "0.4%",
     "budget_base": "469万元（7月1日月初 SUM(ys_p)）",
@@ -116,6 +101,6 @@
   ],
   "footer": {
     "sources": "订单/预算口径：已确认规则；预算分母取月初 SUM(ys_p)",
-    "note": "订单数暂不做统计；昨日明细 ys_p 为 NULL"
+    "note": "订单数暂不做统计；昨日明细 ys_p 为 NULL；基量=大单品"
   }
 }

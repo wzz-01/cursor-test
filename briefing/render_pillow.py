@@ -18,68 +18,54 @@ DEFAULT_OUT = ROOT / "output" / "briefing.png"
 
 NAVY = (11, 58, 110)
 BLUE = (26, 102, 196)
+TEAL = (46, 139, 168)
 INK = (28, 36, 48)
 MUTED = (95, 107, 122)
-LINE = (217, 226, 236)
+LINE = (196, 214, 230)
+SOFT_BLUE = (232, 241, 251)
 BG = (244, 247, 251)
 WHITE = (255, 255, 255)
 RED = (192, 57, 43)
-ORANGE = (199, 119, 0)
+ORANGE = (230, 126, 34)
+GREEN = (31, 138, 91)
 WARN_BG = (253, 236, 236)
 ACTION_BG = (255, 244, 230)
-PAGE_BG = (250, 248, 242)  # 浅奶油底，贴近晨报顶栏
+PAGE_BG = (250, 248, 242)
 WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
 
-def _font_candidates(bold: bool = False, serif: bool = False) -> list[tuple[str, int]]:
-    """返回 (字体路径, ttc索引)。serif=True 时优先宋体，用于大标题。"""
+def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
+    """一律优先微软雅黑。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
 
     def win_set(root: Path) -> list[tuple[str, int]]:
-        if serif:
-            return [
-                (str(root / "simsun.ttc"), 0),
-                (str(root / "SIMSUN.TTC"), 0),
-                (str(root / "simsunb.ttf"), 0),
-                (str(root / "STSONG.TTF"), 0),
-                (str(root / "msyh.ttc"), 0),
-            ]
         if bold:
             return [
                 (str(root / "msyhbd.ttc"), 0),
                 (str(root / "msyh.ttc"), 0),
                 (str(root / "simhei.ttf"), 0),
-                (str(root / "simsun.ttc"), 1),
             ]
         return [
             (str(root / "msyh.ttc"), 0),
             (str(root / "msyhbd.ttc"), 0),
             (str(root / "simhei.ttf"), 0),
-            (str(root / "simsun.ttc"), 0),
             (str(root / "msjh.ttc"), 0),
         ]
 
-    if serif:
-        linux = [
-            ("/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc", 0),
-            ("/usr/share/fonts/truetype/arphic/uming.ttc", 0),
-            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
-        ]
-    else:
-        linux = [
-            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
-            ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
-            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
-        ]
+    linux = [
+        ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
+        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
+    ]
     return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
 @lru_cache(maxsize=64)
-def load_font(size: int, bold: bool = False, serif: bool = False):
+def load_font(size: int, bold: bool = False):
     last_error = None
-    for path, index in _font_candidates(bold=bold, serif=serif):
+    for path, index in _font_candidates(bold=bold):
         if not Path(path).exists():
             continue
         try:
@@ -92,13 +78,12 @@ def load_font(size: int, bold: bool = False, serif: bool = False):
                 last_error = exc2
                 continue
     raise RuntimeError(
-        "未找到可用中文字体。Windows/WSL 请确认存在微软雅黑或宋体。"
+        "未找到微软雅黑等中文字体。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 可读。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
 
 
 def format_cn_date(as_of_date: str) -> str:
-    """2026-07-24 -> 2026年7月24日 星期五"""
     from datetime import datetime
 
     try:
@@ -118,22 +103,32 @@ def extract_clock(generated_at: str, fallback: str = "08:00") -> str:
     return fallback
 
 
+def growth_color(value: str):
+    text = str(value or "").strip()
+    if text.startswith("+"):
+        return GREEN
+    if text.startswith("-") or text.startswith("−"):
+        return RED
+    return NAVY
+
+
 class Drawer:
-    def __init__(self, width: int = 860):
+    def __init__(self, width: int = 900):
         self.width = width
         self.pad = 28
         self.y = self.pad
-        self.img = Image.new("RGB", (width, 3200), PAGE_BG)
+        self.img = Image.new("RGB", (width, 3600), PAGE_BG)
         self.draw = ImageDraw.Draw(self.img)
-        self.font_title = load_font(40, bold=False, serif=True)  # 宋体大标题
+        self.font_title = load_font(36, bold=True)
         self.font_h2 = load_font(16, bold=True)
-        self.font_body = load_font(13)
+        self.font_body = load_font(14, bold=True)
         self.font_small = load_font(13)
         self.font_tiny = load_font(11)
-        self.font_kpi = load_font(26, bold=True)
+        self.font_kpi = load_font(22, bold=True)
         self.font_stat = load_font(20, bold=True)
         self.font_badge_time = load_font(22, bold=True)
         self.font_badge_label = load_font(12)
+        self.font_side = load_font(14, bold=True)
 
     def text_height(self, text: str, font, max_width: int) -> int:
         lines = self.wrap(text, font, max_width)
@@ -212,37 +207,92 @@ def render(data: dict, out: Path) -> None:
 
     # 左侧标题 + 副标题
     d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY)
-    d.draw_text(x0, header_top + 48, sub_line, d.font_small, NAVY, content_w - badge_w - 24)
-    d.y = header_top + badge_h + 16
+    d.draw_text(x0, header_top + 48, sub_line, d.font_small, MUTED, content_w - badge_w - 24)
+    d.y = header_top + badge_h + 10
 
-    # Headline
-    hl_h = d.text_height(data["headline"], d.font_body, content_w - 120) + 28
-    d.round_rect((x0, d.y, x0 + content_w, d.y + hl_h), NAVY, radius=12)
-    d.round_rect((x0 + 14, d.y + 12, x0 + 86, d.y + 32), (40, 90, 150), radius=10)
-    d.draw.text((x0 + 22, d.y + 14), "核心结论", font=d.font_tiny, fill=WHITE)
-    d.draw_text(x0 + 96, d.y + 12, data["headline"], d.font_body, WHITE, content_w - 120)
-    d.y += hl_h + 14
+    # 顶栏分隔三线
+    for dy, w in ((0, 1), (3, 3), (8, 1)):
+        d.draw.line((x0, d.y + dy, x0 + content_w, d.y + dy), fill=NAVY, width=w)
+    d.y += 18
 
-    # KPIs
-    gap = 12
-    card_w = (content_w - 3 * gap) // 4
-    card_h = 118
-    for i, kpi in enumerate(data["kpis"][:4]):
-        cx = x0 + i * (card_w + gap)
-        tone = kpi.get("tone")
-        accent = RED if tone == "danger" else ORANGE if tone == "warn" else BLUE
-        d.round_rect((cx, d.y, cx + card_w, d.y + card_h), WHITE, outline=LINE, radius=14)
-        d.draw.rectangle((cx, d.y + 10, cx + 4, d.y + card_h - 10), fill=accent)
-        d.draw_text(cx + 14, d.y + 12, kpi["label"], d.font_tiny, MUTED)
-        d.draw_text(cx + 14, d.y + 34, kpi["value"], d.font_kpi, NAVY)
-        d.draw_text(cx + 14, d.y + 68, kpi.get("sub", ""), d.font_tiny, MUTED, card_w - 24)
-        badge = kpi.get("badge", "")
-        bw = int(d.draw.textlength(badge, font=d.font_tiny)) + 16
-        badge_bg = (253, 232, 230) if tone == "danger" else (255, 241, 219) if tone == "warn" else (232, 241, 251)
-        badge_fg = accent
-        d.round_rect((cx + 14, d.y + 88, cx + 14 + bw, d.y + 106), badge_bg, radius=10)
-        d.draw.text((cx + 22, d.y + 90), badge, font=d.font_tiny, fill=badge_fg)
-    d.y += card_h + 14
+    # 聚焦语
+    focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
+    # 橙色靶心
+    tx, ty = x0 + 10, d.y + 10
+    d.draw.ellipse((tx - 8, ty - 8, tx + 8, ty + 8), outline=ORANGE, width=3)
+    d.draw.ellipse((tx - 3, ty - 3, tx + 3, ty + 3), fill=ORANGE)
+    d.draw_text(x0 + 28, d.y + 2, focus, d.font_body, NAVY, content_w - 40)
+    d.y += 36
+
+    # 01 业绩追踪：整体 / 基量 两行四列
+    perf = data.get("performance") or {}
+    overall = perf.get("overall") or {}
+    base = perf.get("base") or {}
+    metrics_def = [
+        ("budget", "预算额", "coin"),
+        ("sales", "销额", "bars"),
+        ("achieve_rate", "达成率", "donut"),
+        ("growth_rate", "增长率", "arrow"),
+    ]
+
+    def draw_metric_icon(kind: str, box, accent):
+        x1, y1, x2, y2 = box
+        cx = (x1 + x2) // 2
+        cy = (y1 + y2) // 2
+        if kind == "coin":
+            d.draw.ellipse((cx - 8, cy - 6, cx + 8, cy + 6), outline=accent, width=2)
+            d.draw.ellipse((cx - 8, cy - 10, cx + 8, cy - 2), outline=accent, width=2)
+        elif kind == "bars":
+            d.draw.rectangle((cx - 10, cy + 2, cx - 5, cy + 8), fill=accent)
+            d.draw.rectangle((cx - 3, cy - 2, cx + 2, cy + 8), fill=accent)
+            d.draw.rectangle((cx + 4, cy - 6, cx + 9, cy + 8), fill=accent)
+        elif kind == "donut":
+            d.draw.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), outline=accent, width=3)
+            d.draw.pieslice((cx - 8, cy - 8, cx + 8, cy + 8), start=270, end=90, fill=accent)
+            d.draw.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=WHITE)
+        else:  # arrow
+            d.draw.polygon([(cx, cy - 8), (cx + 7, cy + 2), (cx + 2, cy + 2), (cx + 2, cy + 8),
+                            (cx - 2, cy + 8), (cx - 2, cy + 2), (cx - 7, cy + 2)], fill=accent)
+
+    def draw_perf_row(row_label: str, side_color, values: dict, y: int, row_h: int):
+        side_w = 36
+        d.round_rect((x0 + 12, y, x0 + 12 + side_w, y + row_h - 8), side_color, radius=8)
+        # 竖排文字
+        chars = list(row_label)
+        ch_h = 16
+        start_y = y + (row_h - 8 - len(chars) * ch_h) // 2
+        for i, ch in enumerate(chars):
+            tw = int(d.draw.textlength(ch, font=d.font_side))
+            d.draw.text((x0 + 12 + (side_w - tw) // 2, start_y + i * ch_h), ch, font=d.font_side, fill=WHITE)
+
+        grid_x = x0 + 12 + side_w + 8
+        grid_w = content_w - (grid_x - x0) - 12
+        cell_w = grid_w // 4
+        for i, (key, suffix, icon) in enumerate(metrics_def):
+            cx1 = grid_x + i * cell_w
+            cx2 = cx1 + cell_w - 6
+            d.round_rect((cx1, y, cx2, y + row_h - 8), WHITE, outline=LINE, radius=8)
+            label = f"{row_label}{suffix}"
+            d.draw_text(cx1 + 10, y + 8, label, d.font_tiny, MUTED)
+            val = values.get(key) or "—"
+            color = growth_color(val) if key == "growth_rate" else NAVY
+            d.draw_text(cx1 + 10, y + 28, str(val), d.font_kpi, color)
+            icon_box = (cx2 - 36, y + row_h - 40, cx2 - 8, y + row_h - 14)
+            draw_metric_icon(icon, icon_box, TEAL if row_label == "基量" else BLUE)
+
+    block_top = d.y
+    row_h = 88
+    block_h = 34 + row_h * 2 + 18
+    d.round_rect((x0, block_top, x0 + content_w, block_top + block_h), SOFT_BLUE, outline=LINE, radius=12)
+    # 左上角页签
+    tab = "01 业绩追踪"
+    tab_w = int(d.draw.textlength(tab, font=d.font_tiny)) + 20
+    d.round_rect((x0 + 14, block_top + 10, x0 + 14 + tab_w, block_top + 30), NAVY, radius=6)
+    d.draw.text((x0 + 24, block_top + 12), tab, font=d.font_tiny, fill=WHITE)
+
+    draw_perf_row("整体", NAVY, overall, block_top + 38, row_h)
+    draw_perf_row("基量", TEAL, base, block_top + 38 + row_h, row_h)
+    d.y = block_top + block_h + 14
 
     def section_start(num: str, title: str, height_guess: int = 40):
         top = d.y
@@ -252,10 +302,10 @@ def render(data: dict, out: Path) -> None:
         d.draw.text((x0 + 52, top + 18), title, font=d.font_h2, fill=NAVY)
         return top
 
-    # Section 01 bars
+    # Section 02 bars（原销售组对比）
     items = data["section_01"]["items"]
     sec_h = 56 + len(items) * 42
-    top = section_start("01", data["section_01"]["title"], sec_h)
+    top = section_start("02", data["section_01"]["title"], sec_h)
     # redraw with exact height already set via estimate; draw content
     yy = top + 52
     for item in items:
@@ -291,7 +341,7 @@ def render(data: dict, out: Path) -> None:
     d.round_rect((x0, top, x0 + left_w, top + box_h), WHITE, outline=LINE, radius=14)
     d.round_rect((x0 + left_w + 12, top, x0 + content_w, top + box_h), WHITE, outline=LINE, radius=14)
     d.round_rect((x0 + 14, top + 14, x0 + 42, top + 42), NAVY, radius=8)
-    d.draw.text((x0 + 19, top + 20), "02", font=d.font_tiny, fill=WHITE)
+    d.draw.text((x0 + 19, top + 20), "03", font=d.font_tiny, fill=WHITE)
     d.draw.text((x0 + 52, top + 18), data["section_02"]["title"], font=d.font_h2, fill=NAVY)
     yy = top + 52
     d.draw_text(x0 + 16, yy, "下滑城市", d.font_tiny, MUTED)
@@ -306,7 +356,7 @@ def render(data: dict, out: Path) -> None:
 
     rx = x0 + left_w + 12
     d.round_rect((rx + 14, top + 14, rx + 42, top + 42), NAVY, radius=8)
-    d.draw.text((rx + 19, top + 20), "02", font=d.font_tiny, fill=WHITE)
+    d.draw.text((rx + 19, top + 20), "03", font=d.font_tiny, fill=WHITE)
     d.draw.text((rx + 52, top + 18), "下滑客户", font=d.font_h2, fill=NAVY)
     yy = top + 52
     for c in customers:
@@ -321,7 +371,7 @@ def render(data: dict, out: Path) -> None:
     top = d.y
     d.round_rect((x0, top, x0 + content_w, top + sec_h), WHITE, outline=LINE, radius=14)
     d.round_rect((x0 + 14, top + 14, x0 + 42, top + 42), NAVY, radius=8)
-    d.draw.text((x0 + 19, top + 20), "03", font=d.font_tiny, fill=WHITE)
+    d.draw.text((x0 + 19, top + 20), "04", font=d.font_tiny, fill=WHITE)
     d.draw.text((x0 + 52, top + 18), p["title"], font=d.font_h2, fill=NAVY)
     stats = [
         ("年累计销额", p["sales"], f"增额 {p['delta']}"),
@@ -345,7 +395,7 @@ def render(data: dict, out: Path) -> None:
     top = d.y
     d.round_rect((x0, top, x0 + content_w, top + sec_h), WHITE, outline=LINE, radius=14)
     d.round_rect((x0 + 14, top + 14, x0 + 42, top + 42), NAVY, radius=8)
-    d.draw.text((x0 + 19, top + 20), "04", font=d.font_tiny, fill=WHITE)
+    d.draw.text((x0 + 19, top + 20), "05", font=d.font_tiny, fill=WHITE)
     d.draw.text((x0 + 52, top + 18), o["title"], font=d.font_h2, fill=NAVY)
     no_group = "无" if not o.get("no_order_groups_5d") else "、".join(o["no_order_groups_5d"])
     no_cust = "无" if not o.get("no_order_customers_month") else "有"
