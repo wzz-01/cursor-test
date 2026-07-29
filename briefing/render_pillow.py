@@ -122,6 +122,7 @@ class Drawer:
         self.font_title = load_font(36, bold=True)
         self.font_h2 = load_font(16, bold=True)
         self.font_body = load_font(14, bold=True)
+        self.font_focus = load_font(18, bold=True)  # 聚焦语：放大两个号（约 14→18）
         self.font_small = load_font(13)
         self.font_tiny = load_font(11)
         self.font_kpi = load_font(22, bold=True)
