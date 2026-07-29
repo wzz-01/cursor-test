@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+from functools import lru_cache
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -28,19 +30,52 @@ ACTION_BG = (255, 244, 230)
 PAGE_BG = (238, 243, 248)
 
 
-def load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
-    candidates = [
-        "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
-        "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
+    """返回 (字体路径, ttc索引) 列表。Windows 优先微软雅黑，避免中文乱码。"""
+    windir = os.environ.get("WINDIR", r"C:\Windows")
+    win_fonts = Path(windir) / "Fonts"
+    if bold:
+        windows = [
+            (str(win_fonts / "msyhbd.ttc"), 0),  # 微软雅黑 Bold
+            (str(win_fonts / "msyh.ttc"), 0),
+            (str(win_fonts / "simhei.ttf"), 0),  # 黑体
+            (str(win_fonts / "simsun.ttc"), 1),
+        ]
+    else:
+        windows = [
+            (str(win_fonts / "msyh.ttc"), 0),  # 微软雅黑
+            (str(win_fonts / "msyhbd.ttc"), 0),
+            (str(win_fonts / "simhei.ttf"), 0),
+            (str(win_fonts / "simsun.ttc"), 0),  # 宋体
+            (str(win_fonts / "msjh.ttc"), 0),  # 微软正黑体
+        ]
+    linux = [
+        ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
+        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
     ]
-    for path in candidates:
-        if Path(path).exists():
+    return windows + linux
+
+
+@lru_cache(maxsize=32)
+def load_font(size: int, bold: bool = False):
+    last_error = None
+    for path, index in _font_candidates(bold=bold):
+        if not Path(path).exists():
+            continue
+        try:
+            return ImageFont.truetype(path, size=size, index=index)
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
             try:
                 return ImageFont.truetype(path, size=size)
-            except Exception:
+            except Exception as exc2:  # noqa: BLE001
+                last_error = exc2
                 continue
-    return ImageFont.load_default()
+    raise RuntimeError(
+        "未找到可用中文字体。Windows 请确认存在 C:\\Windows\\Fonts\\msyh.ttc 或 simhei.ttf。"
+        + (f" 最后错误: {last_error}" if last_error else "")
+    )
 
 
 class Drawer:
@@ -50,13 +85,13 @@ class Drawer:
         self.y = self.pad
         self.img = Image.new("RGB", (width, 3200), PAGE_BG)
         self.draw = ImageDraw.Draw(self.img)
-        self.font_title = load_font(34)
-        self.font_h2 = load_font(16)
+        self.font_title = load_font(34, bold=True)
+        self.font_h2 = load_font(16, bold=True)
         self.font_body = load_font(13)
         self.font_small = load_font(12)
         self.font_tiny = load_font(11)
-        self.font_kpi = load_font(26)
-        self.font_stat = load_font(20)
+        self.font_kpi = load_font(26, bold=True)
+        self.font_stat = load_font(20, bold=True)
 
     def text_height(self, text: str, font, max_width: int) -> int:
         lines = self.wrap(text, font, max_width)

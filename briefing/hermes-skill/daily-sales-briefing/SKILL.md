@@ -30,23 +30,26 @@ metadata:
 1. **解析**：`region`（标准省区名）、`as_of_date`（昨日→具体 YYYY-MM-DD）、`report_type=daily_sales_briefing`
 2. **查数**：用你现有的销售查询能力，按该省区+日期取①～⑤类结论（口径不变）
 3. **填 JSON**：把结论填进日销售简报结构（见下方）。禁止编造数字；缺值用 `null` 或 `[]`
-4. **出图**：把 JSON 写入临时文件，运行渲染脚本：
+4. **出图**：把 JSON 写入临时文件，运行渲染脚本。
+
+Windows 优先用 `python`（不要用可能指向坏掉安装的 `py -3`）：
 
 ```bash
 python "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out <输出png路径>
 ```
 
-Windows 若 `python` 不可用，改用 `py -3`：
+Linux/macOS：
 
 ```bash
-py -3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out <输出png路径>
+python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out <输出png路径>
 ```
 
-若缺少 Pillow，先安装一次：
+若缺少 Pillow：Windows（Python 3.8）用  
+`python -m pip install "pillow>=10.0.0,<11"`；  
+更高版本 Python 可用  
+`python -m pip install -r "${HERMES_SKILL_DIR}/scripts/requirements.txt"`。
 
-```bash
-py -3 -m pip install -r "${HERMES_SKILL_DIR}/scripts/requirements.txt"
-```
+脚本会自动使用 Windows 自带中文字体（微软雅黑/黑体）。若仍乱码，检查是否存在 `C:\Windows\Fonts\msyh.ttc`。
 
 5. **发送**：把生成的 PNG 发给用户（飞书/当前会话）。可附一句摘要，但主体必须是图片。  
    若平台对高清图有压缩，在回复末尾加：`[[as_document]]`
