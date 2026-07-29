@@ -27,17 +27,25 @@ RED = (192, 57, 43)
 ORANGE = (199, 119, 0)
 WARN_BG = (253, 236, 236)
 ACTION_BG = (255, 244, 230)
-PAGE_BG = (238, 243, 248)
+PAGE_BG = (250, 248, 242)  # 浅奶油底，贴近晨报顶栏
+WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
 
-def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
-    """返回 (字体路径, ttc索引) 列表。Windows / WSL 优先微软雅黑，避免中文乱码。"""
+def _font_candidates(bold: bool = False, serif: bool = False) -> list[tuple[str, int]]:
+    """返回 (字体路径, ttc索引)。serif=True 时优先宋体，用于大标题。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
-    # WSL 可直接读 Windows 字体，无需 sudo apt 装字体
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
 
     def win_set(root: Path) -> list[tuple[str, int]]:
+        if serif:
+            return [
+                (str(root / "simsun.ttc"), 0),
+                (str(root / "SIMSUN.TTC"), 0),
+                (str(root / "simsunb.ttf"), 0),
+                (str(root / "STSONG.TTF"), 0),
+                (str(root / "msyh.ttc"), 0),
+            ]
         if bold:
             return [
                 (str(root / "msyhbd.ttc"), 0),
@@ -53,18 +61,25 @@ def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
             (str(root / "msjh.ttc"), 0),
         ]
 
-    linux = [
-        ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
-        ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
-        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
-    ]
+    if serif:
+        linux = [
+            ("/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc", 0),
+            ("/usr/share/fonts/truetype/arphic/uming.ttc", 0),
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ]
+    else:
+        linux = [
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+            ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
+        ]
     return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
-@lru_cache(maxsize=32)
-def load_font(size: int, bold: bool = False):
+@lru_cache(maxsize=64)
+def load_font(size: int, bold: bool = False, serif: bool = False):
     last_error = None
-    for path, index in _font_candidates(bold=bold):
+    for path, index in _font_candidates(bold=bold, serif=serif):
         if not Path(path).exists():
             continue
         try:
@@ -77,9 +92,30 @@ def load_font(size: int, bold: bool = False):
                 last_error = exc2
                 continue
     raise RuntimeError(
-        "未找到可用中文字体。Windows 请确认存在 C:\\Windows\\Fonts\\msyh.ttc 或 simhei.ttf。"
+        "未找到可用中文字体。Windows/WSL 请确认存在微软雅黑或宋体。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
+
+
+def format_cn_date(as_of_date: str) -> str:
+    """2026-07-24 -> 2026年7月24日 星期五"""
+    from datetime import datetime
+
+    try:
+        dt = datetime.strptime(as_of_date.strip()[:10], "%Y-%m-%d")
+        return f"{dt.year}年{dt.month}月{dt.day}日 {WEEKDAY_CN[dt.weekday()]}"
+    except Exception:
+        return as_of_date
+
+
+def extract_clock(generated_at: str, fallback: str = "08:00") -> str:
+    text = (generated_at or "").strip()
+    if len(text) >= 5 and ":" in text:
+        parts = text.replace("T", " ").split()
+        for p in reversed(parts):
+            if ":" in p:
+                return p[:5]
+    return fallback
 
 
 class Drawer:
@@ -89,13 +125,15 @@ class Drawer:
         self.y = self.pad
         self.img = Image.new("RGB", (width, 3200), PAGE_BG)
         self.draw = ImageDraw.Draw(self.img)
-        self.font_title = load_font(34, bold=True)
+        self.font_title = load_font(40, bold=False, serif=True)  # 宋体大标题
         self.font_h2 = load_font(16, bold=True)
         self.font_body = load_font(13)
-        self.font_small = load_font(12)
+        self.font_small = load_font(13)
         self.font_tiny = load_font(11)
         self.font_kpi = load_font(26, bold=True)
         self.font_stat = load_font(20, bold=True)
+        self.font_badge_time = load_font(22, bold=True)
+        self.font_badge_label = load_font(12)
 
     def text_height(self, text: str, font, max_width: int) -> int:
         lines = self.wrap(text, font, max_width)
@@ -146,17 +184,36 @@ def render(data: dict, out: Path) -> None:
     x0 = d.pad
     content_w = d.width - 2 * d.pad
 
-    # Header
-    d.draw_text(x0, d.y, data["meta"]["title"], d.font_title, NAVY)
-    time_box = (d.width - d.pad - 100, d.y, d.width - d.pad, d.y + 52)
-    d.round_rect(time_box, NAVY, radius=10)
-    clock = (data["meta"].get("generated_at") or "08:00")[-5:]
-    d.draw.text((time_box[0] + 24, d.y + 6), "晨报时点", font=d.font_tiny, fill=(220, 230, 245))
-    d.draw.text((time_box[0] + 18, d.y + 22), clock, font=d.font_h2, fill=WHITE)
-    d.y += 42
-    meta = f"{data['meta']['subtitle']} · {data['meta']['region']}  |  数据截至 {data['meta']['as_of_date']} · {data['meta']['owner']}"
-    h = d.draw_text(x0, d.y, meta, d.font_small, MUTED, content_w - 110)
-    d.y += h + 14
+    # Header —— 对齐「销售经营晨报」顶栏样式
+    meta = data.get("meta") or {}
+    brand_title = meta.get("brand_title") or "销售经营晨报"
+    scope = meta.get("scope") or "省区经营管理"
+    as_of_date = meta.get("as_of_date") or ""
+    generated_at = meta.get("generated_at") or "08:00"
+    clock = extract_clock(generated_at, meta.get("report_time") or "08:00")
+    data_cutoff = meta.get("data_cutoff") or clock
+    date_line = format_cn_date(as_of_date)
+    sub_line = f"{scope}  |  {date_line}  |  数据截至 {data_cutoff}"
+
+    header_top = d.y
+    # 右侧「晨间速递」徽章
+    badge_w, badge_h = 118, 64
+    time_box = (d.width - d.pad - badge_w, header_top, d.width - d.pad, header_top + badge_h)
+    d.round_rect(time_box, NAVY, radius=12)
+    # 简易时钟图标（白圈）
+    cx, cy = time_box[0] + 28, header_top + 22
+    d.draw.ellipse((cx - 9, cy - 9, cx + 9, cy + 9), outline=WHITE, width=2)
+    d.draw.line((cx, cy, cx, cy - 5), fill=WHITE, width=2)
+    d.draw.line((cx, cy, cx + 4, cy + 2), fill=WHITE, width=2)
+    d.draw.text((time_box[0] + 42, header_top + 10), clock, font=d.font_badge_time, fill=WHITE)
+    label = "晨间速递"
+    lw = int(d.draw.textlength(label, font=d.font_badge_label))
+    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 40), label, font=d.font_badge_label, fill=WHITE)
+
+    # 左侧标题 + 副标题
+    d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY)
+    d.draw_text(x0, header_top + 48, sub_line, d.font_small, NAVY, content_w - badge_w - 24)
+    d.y = header_top + badge_h + 16
 
     # Headline
     hl_h = d.text_height(data["headline"], d.font_body, content_w - 120) + 28

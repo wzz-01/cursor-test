@@ -60,8 +60,10 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 
 最少包含：
 
-- `meta.title` = `{region}经营简报`
-- `meta.region` / `meta.as_of_date` / `meta.generated_at` / `meta.owner`
+- `meta.brand_title`：顶栏大标题，默认 `销售经营晨报`
+- `meta.scope`：副标题左侧，默认 `省区经营管理`
+- `meta.region` / `meta.title`：省区名（如河南经销省区）
+- `meta.as_of_date` / `meta.generated_at` / `meta.data_cutoff` / `meta.report_time`：日期与时点
 - `headline`
 - `kpis`（4 个）
 - `section_01` 销售组达成对比
