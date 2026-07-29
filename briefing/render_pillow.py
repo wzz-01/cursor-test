@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -298,31 +299,61 @@ def render(data: dict, out: Path) -> None:
         d.draw.line((x0, d.y + dy, x0 + content_w, d.y + dy), fill=NAVY, width=w)
     d.y += 18
 
-    # 聚焦语：楷体加粗加大、整行居中；两侧橘黄靶子（实心同心圆 + 十字）
+    # 聚焦语：楷体加粗加大、整行居中；两侧为「靶子+箭」图标（与截图一致）
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
     focus_font = d.font_focus
     text_w = int(d.draw.textlength(focus, font=focus_font))
-    icon_gap = 16
-    icon_r = 13
-    group_w = icon_r * 4 + icon_gap * 2 + text_w
+    icon_gap = 14
+    icon_box = 28  # 含箭头伸出的占位
+    group_w = icon_box * 2 + icon_gap * 2 + text_w
     start_x = x0 + max(0, (content_w - group_w) // 2)
     ty = d.y + 18
 
-    def draw_target(cx: int, cy: int, r: int = 13):
-        # 明确的靶子造型：橙底 → 白环 → 橙环 → 白靶心 + 十字准星
-        d.draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=ORANGE)
-        d.draw.ellipse((cx - r + 3, cy - r + 3, cx + r - 3, cy + r - 3), fill=WHITE)
-        d.draw.ellipse((cx - r + 6, cy - r + 6, cx + r - 6, cy + r - 6), fill=ORANGE)
-        d.draw.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=WHITE)
-        d.draw.line((cx - r - 3, cy, cx + r + 3, cy), fill=ORANGE, width=2)
-        d.draw.line((cx, cy - r - 3, cx, cy + r + 3), fill=ORANGE, width=2)
+    def draw_target_arrow(cx: int, cy: int, r: int = 11):
+        """橘黄靶子 + 从右上射入靶心的箭（与截图一致）"""
+        # 三层同心靶环
+        d.draw.ellipse((cx - r, cy - r, cx + r, cy + r), outline=ORANGE, width=2)
+        d.draw.ellipse((cx - r + 4, cy - r + 4, cx + r - 4, cy + r - 4), outline=ORANGE, width=2)
+        d.draw.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=ORANGE)
 
-    draw_target(start_x + icon_r, ty, icon_r)
-    text_x = start_x + icon_r * 2 + icon_gap
+        # 箭杆：右上 → 靶心
+        ax, ay = cx + r + 5, cy - r - 4
+        bx, by = cx + 1, cy - 1
+        ang = math.atan2(by - ay, bx - ax)
+        d.draw.line((ax, ay, bx, by), fill=ORANGE, width=2)
+
+        # 箭头
+        ah = 7
+        p1 = (bx, by)
+        p2 = (
+            bx - ah * math.cos(ang) + 4.2 * math.sin(ang),
+            by - ah * math.sin(ang) - 4.2 * math.cos(ang),
+        )
+        p3 = (
+            bx - ah * math.cos(ang) - 4.2 * math.sin(ang),
+            by - ah * math.sin(ang) + 4.2 * math.cos(ang),
+        )
+        d.draw.polygon([p1, p2, p3], fill=ORANGE)
+
+        # 尾羽
+        back = 6
+        d.draw.line(
+            (ax, ay, ax + back * math.cos(ang + 2.45), ay + back * math.sin(ang + 2.45)),
+            fill=ORANGE,
+            width=2,
+        )
+        d.draw.line(
+            (ax, ay, ax + back * math.cos(ang - 2.45), ay + back * math.sin(ang - 2.45)),
+            fill=ORANGE,
+            width=2,
+        )
+
+    draw_target_arrow(start_x + icon_box // 2, ty, 11)
+    text_x = start_x + icon_box + icon_gap
     bbox = focus_font.getbbox(focus)
     text_h = bbox[3] - bbox[1]
     d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY, stroke_width=1, stroke_fill=NAVY)
-    draw_target(text_x + text_w + icon_gap + icon_r, ty, icon_r)
+    draw_target_arrow(text_x + text_w + icon_gap + icon_box // 2, ty, 11)
     d.y += 62
 
     # 01 业绩追踪：整体 / 基量 两行四列
