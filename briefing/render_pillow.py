@@ -657,9 +657,13 @@ def render(data: dict, out: Path) -> None:
         yy += 36
     d.y = top + box_h + 14
 
-    footer = f"{data['footer']['sources']}  |  {data['footer']['note']}  ·  {data['meta']['owner']}"
-    h = d.draw_text(x0, d.y, footer, d.font_tiny, MUTED, content_w)
-    d.y += h + 8
+    # 底部：左数据源 / 右制作部门（统一固定文案）
+    left_footer = "【数据源：CRM | SFA | 终端巡检系统 | 市场活动平台 】"
+    right_footer = "【 制作部门：数据组】"
+    d.draw.text((x0, d.y), left_footer, font=d.font_tiny, fill=MUTED)
+    rw = int(d.draw.textlength(right_footer, font=d.font_tiny))
+    d.draw.text((x0 + content_w - rw, d.y), right_footer, font=d.font_tiny, fill=MUTED)
+    d.y += 22
     d.finish(out)
 
 

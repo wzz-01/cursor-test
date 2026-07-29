@@ -70,7 +70,7 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 - `section_02` 连续三月同比下滑
 - `section_03` 年累计进度
 - `section_04` 昨日订单
-- `warnings` / `actions` / `footer`
+- `warnings` / `actions` / `footer`（页脚文案由渲染器固定：左「数据源…」右「制作部门：数据组」，JSON footer 可忽略）
 
 文字结论映射：
 
@@ -82,7 +82,7 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 | ② 下滑城市/组/客户、后20% | `section_02` + `warnings` |
 | ③ 年累计进度 | `section_03` |
 | ④ 昨日订单 | `section_04` |
-| ⑤ 门店拜访等扩展 | 暂写入 `warnings` 或 `footer.note` |
+| ⑤ 门店拜访等扩展 | 暂写入 `warnings` 或 `actions` |
 
 `performance` 示例：
 
