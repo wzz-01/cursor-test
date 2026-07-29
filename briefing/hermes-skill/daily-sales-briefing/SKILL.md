@@ -1,7 +1,7 @@
 ---
 name: daily-sales-briefing
 description: 把省区日销售查询结论渲染成经营晨报 PNG（支持辽宁/河南等任意省区）
-version: 1.0.0
+version: 1.1.0
 author: cursor-test
 license: MIT
 platforms: [windows, macos, linux]
@@ -25,105 +25,47 @@ metadata:
 
 ## Procedure
 
-按顺序执行：
-
-1. **解析**：`region`（标准省区名）、`as_of_date`（昨日→具体 YYYY-MM-DD）、`report_type=daily_sales_briefing`
-2. **查数**：用你现有的销售查询能力，按该省区+日期取①～⑤类结论（口径不变）
-3. **填 JSON**：把结论填进日销售简报结构（见下方）。禁止编造数字；缺值用 `null` 或 `[]`
-4. **出图**：把 JSON 写入临时文件，运行渲染脚本。
-
-Windows 优先用 `python`（不要用可能指向坏掉安装的 `py -3`）：
+1. **解析**：`region`、`as_of_date`、`report_type=daily_sales_briefing`
+2. **查数**：按省区+日期取结论（口径不变）
+3. **填 JSON**：禁止编造；缺值用 `""` / `null` / `[]`
+4. **出图**：
 
 ```bash
-python "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out <输出png路径>
+python "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json> --out <png>
 ```
 
-Linux/macOS：
+5. **发送**：主体必须是 PNG；必要时加 `[[as_document]]`
 
-```bash
-python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out <输出png路径>
-```
+## 输出规格
 
-若缺少 Pillow：Windows（Python 3.8）用  
-`python -m pip install "pillow>=10.0.0,<11"`；  
-更高版本 Python 可用  
-`python -m pip install -r "${HERMES_SKILL_DIR}/scripts/requirements.txt"`。
+- 固定 **793×1983**（手机竖版一张图看全）
+- 页脚固定：左 `数据源：CRM | SFA | 终端巡检系统 | 市场活动平台`，右 `制作部门：数据组`（无【】）
 
-脚本会自动使用 Windows 自带中文字体（微软雅黑/黑体）。若仍乱码，检查是否存在 `C:\Windows\Fonts\msyh.ttc`。
+## JSON 结构（模板模块）
 
-5. **发送**：把生成的 PNG 发给用户（飞书/当前会话）。可附一句摘要，但主体必须是图片。  
-   若平台对高清图有压缩，在回复末尾加：`[[as_document]]`
-
-## JSON 必填字段
-
-对照 `${HERMES_SKILL_DIR}/scripts/data.example.json` 与 `schema.daily_sales.json`。
-
-最少包含：
-
-- `meta.brand_title`：顶栏大标题，默认 `销售经营晨报`
-- `meta.scope`：副标题左侧，默认 `省区经营管理`
-- `meta.region` / `meta.title`：省区名（如河南经销省区）
-- `meta.as_of_date` / `meta.generated_at` / `meta.data_cutoff` / `meta.report_time`：日期与时点
-- `headline`
-- `kpis`（4 个）
-- `section_01` 销售组达成对比
-- `section_02` 连续三月同比下滑
-- `section_03` 年累计进度
-- `section_04` 昨日订单
-- `warnings` / `actions` / `footer`（页脚文案由渲染器固定：左「数据源…」右「制作部门：数据组」，JSON footer 可忽略）
-- 输出尺寸固定 **793×1983**（手机竖版长图；内容不足底部补色，过长等比缩小）
-
-文字结论映射：
-
-| 原文 | JSON |
+| 模块 | 字段 |
 |------|------|
-| ① 全品类/整体：预算、销额、达成、订单进度、增长 | `performance.overall`（缺数留空字符串） |
-| ① 基量/大单品：预算、销额、达成、订单进度、增长 | `performance.base`（缺数留空字符串） |
-| ① 销售组明细 | `section_01.rows`（表格） |
-| ② 下滑城市/组/客户、后20% | `section_02` + `warnings` |
-| ③ 年累计进度 | `section_03` |
-| ④ 昨日订单 | `section_04` |
-| ⑤ 门店拜访等扩展 | 暂写入 `warnings` 或 `actions` |
+| 顶栏 | `meta.*` / `focus` |
+| 01 业绩追踪 | `performance.overall` / `performance.base`（预算/销额/达成/订单进度/增长） |
+| 01 销售组表 | `section_groups.rows`（兼容旧 `section_01`） |
+| 01 后10客户 | `section_bottom10.rows`（name/budget/actual/forecast/order_progress） |
+| 02 拜访执行 | `section_visit.metrics[6]` + `section_visit.alert` |
+| 03 推广执行 | `section_promo.metrics[6]` + `trend_7d` + `structure` |
+| 04 经营预警 | `section_warn.blocks`（A/B/C） |
+
+兼容：若无新字段，渲染器会尽量从旧 `section_02`/`section_04`/`warnings` 回退拼装预警块。
 
 `performance` 示例：
 
 ```json
 "performance": {
-  "overall": {"budget": "1280万", "sales": "1185万", "achieve_rate": "92.6%", "order_progress": "77.4%", "growth_rate": "+8.3%"},
-  "base": {"budget": "860万", "sales": "792万", "achieve_rate": "92.1%", "order_progress": "75.8%", "growth_rate": "+5.6%"}
+  "overall": {"budget": "582万", "sales": "587万", "achieve_rate": "100.8%", "order_progress": "", "growth_rate": "+20.9%"},
+  "base": {"budget": "450万", "sales": "481万", "achieve_rate": "106.8%", "order_progress": "", "growth_rate": "+20.3%"}
 }
 ```
-
-`section_01` 表格示例：
-
-```json
-"section_01": {
-  "title": "分区 / 销售组业绩进度",
-  "warn_below": 90,
-  "rows": [
-    {
-      "name": "濮鹤经销组",
-      "achieve_rate": 117.0,
-      "growth_rate": 34.5,
-      "base_achieve_rate": 123.6,
-      "order_amount_5d": "43万元"
-    }
-  ]
-}
-```
-
-达成率低于 `warn_below`（默认90）的整行标红。
-
 
 ## Pitfalls
 
 - 不要用文生图模型手写 KPI 数字
-- 不要把辽宁数据套到河南；只共用版式
-- 查询失败时不要出假数据 PNG，先文字说明
-- Windows 中文路径注意用引号包住文件路径
-
-## Verification
-
-- PNG 文件存在且可打开
-- 图标题省区与用户要求一致
-- 关键数字与查询结论一致
+- 无数据必须留空，不要填假数
+- Windows 优先用 `python`，不要用坏掉的 `py -3`
