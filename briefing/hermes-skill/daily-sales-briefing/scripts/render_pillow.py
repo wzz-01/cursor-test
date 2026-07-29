@@ -122,6 +122,7 @@ class Drawer:
         self.font_title = load_font(36, bold=True)
         self.font_h2 = load_font(16, bold=True)
         self.font_body = load_font(14, bold=True)
+        self.font_focus = load_font(20, bold=True)  # 聚焦语：放大两个号（14→20）
         self.font_small = load_font(13)
         self.font_tiny = load_font(11)
         self.font_kpi = load_font(22, bold=True)
@@ -215,14 +216,23 @@ def render(data: dict, out: Path) -> None:
         d.draw.line((x0, d.y + dy, x0 + content_w, d.y + dy), fill=NAVY, width=w)
     d.y += 18
 
-    # 聚焦语
+    # 聚焦语：放大、整行居中（图标+文字作为一组居中）
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
-    # 橙色靶心
-    tx, ty = x0 + 10, d.y + 10
-    d.draw.ellipse((tx - 8, ty - 8, tx + 8, ty + 8), outline=ORANGE, width=3)
-    d.draw.ellipse((tx - 3, ty - 3, tx + 3, ty + 3), fill=ORANGE)
-    d.draw_text(x0 + 28, d.y + 2, focus, d.font_body, NAVY, content_w - 40)
-    d.y += 36
+    focus_font = d.font_focus
+    text_w = int(d.draw.textlength(focus, font=focus_font))
+    icon_gap = 10
+    icon_size = 10
+    group_w = icon_size * 2 + icon_gap + text_w
+    start_x = x0 + max(0, (content_w - group_w) // 2)
+    ty = d.y + 12
+    tx = start_x + icon_size
+    d.draw.ellipse((tx - icon_size, ty - icon_size, tx + icon_size, ty + icon_size), outline=ORANGE, width=3)
+    d.draw.ellipse((tx - 4, ty - 4, tx + 4, ty + 4), fill=ORANGE)
+    text_x = start_x + icon_size * 2 + icon_gap
+    bbox = focus_font.getbbox(focus)
+    text_h = bbox[3] - bbox[1]
+    d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY)
+    d.y += 44
 
     # 01 业绩追踪：整体 / 基量 两行四列
     perf = data.get("performance") or {}
