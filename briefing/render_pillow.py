@@ -356,78 +356,121 @@ def render(data: dict, out: Path) -> None:
     draw_target_arrow(text_x + text_w + icon_gap + icon_box // 2, ty, 11)
     d.y += 62
 
-    # 01 业绩追踪：整体 / 基量 两行四列
+    # 01 业绩追踪：整体 / 基量 两行五列（严格按模板排版）
     perf = data.get("performance") or {}
     overall = perf.get("overall") or {}
     base = perf.get("base") or {}
+    # 五列：预算额、销额、达成率、订单进度、增长率；无数据则留空
     metrics_def = [
         ("budget", "预算额", "coin"),
         ("sales", "销额", "bars"),
         ("achieve_rate", "达成率", "donut"),
+        ("order_progress", "订单进度", "progress"),
         ("growth_rate", "增长率", "arrow"),
     ]
+
+    def fmt_empty(v):
+        if v is None or v == "" or v == "—" or v == "-":
+            return ""
+        return str(v)
 
     def draw_metric_icon(kind: str, box, accent):
         x1, y1, x2, y2 = box
         cx = (x1 + x2) // 2
         cy = (y1 + y2) // 2
         if kind == "coin":
-            d.draw.ellipse((cx - 8, cy - 6, cx + 8, cy + 6), outline=accent, width=2)
-            d.draw.ellipse((cx - 8, cy - 10, cx + 8, cy - 2), outline=accent, width=2)
+            for dy in (-6, -1, 4):
+                d.draw.ellipse((cx - 8, cy + dy - 3, cx + 8, cy + dy + 3), outline=accent, width=2)
         elif kind == "bars":
-            d.draw.rectangle((cx - 10, cy + 2, cx - 5, cy + 8), fill=accent)
-            d.draw.rectangle((cx - 3, cy - 2, cx + 2, cy + 8), fill=accent)
-            d.draw.rectangle((cx + 4, cy - 6, cx + 9, cy + 8), fill=accent)
+            for i, h in enumerate((4, 7, 10, 13)):
+                bx = cx - 11 + i * 6
+                d.draw.rectangle((bx, cy + 8 - h, bx + 4, cy + 8), fill=accent)
         elif kind == "donut":
-            d.draw.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), outline=accent, width=3)
-            d.draw.pieslice((cx - 8, cy - 8, cx + 8, cy + 8), start=270, end=90, fill=accent)
-            d.draw.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=WHITE)
-        else:  # arrow
-            d.draw.polygon([(cx, cy - 8), (cx + 7, cy + 2), (cx + 2, cy + 2), (cx + 2, cy + 8),
-                            (cx - 2, cy + 8), (cx - 2, cy + 2), (cx - 7, cy + 2)], fill=accent)
+            d.draw.ellipse((cx - 9, cy - 9, cx + 9, cy + 9), outline=accent, width=3)
+            d.draw.pieslice((cx - 9, cy - 9, cx + 9, cy + 9), start=270, end=110, fill=accent)
+            d.draw.ellipse((cx - 4, cy - 4, cx + 4, cy + 4), fill=WHITE)
+        elif kind == "progress":
+            d.round_rect((cx - 14, cy - 4, cx + 14, cy + 4), (220, 230, 238), radius=4)
+            d.round_rect((cx - 14, cy - 4, cx + 2, cy + 4), accent, radius=4)
+        else:
+            d.draw.polygon(
+                [
+                    (cx, cy - 9),
+                    (cx + 7, cy + 1),
+                    (cx + 2, cy + 1),
+                    (cx + 2, cy + 9),
+                    (cx - 2, cy + 9),
+                    (cx - 2, cy + 1),
+                    (cx - 7, cy + 1),
+                ],
+                fill=accent,
+            )
 
-    def draw_perf_row(row_label: str, side_color, values: dict, y: int, row_h: int):
-        side_w = 36
-        d.round_rect((x0 + 12, y, x0 + 12 + side_w, y + row_h - 8), side_color, radius=8)
+    title_h = 44
+    row_h = 108
+    side_w = 40
+    pad = 14
+    block_h = title_h + row_h * 2 + pad
+    block_top = d.y
+    d.round_rect((x0, block_top, x0 + content_w, block_top + block_h), WHITE, outline=LINE, radius=12)
+
+    # 标题：01 方块 + 业绩追踪 + 底部分隔线
+    d.round_rect((x0 + 14, block_top + 10, x0 + 42, block_top + 38), NAVY, radius=8)
+    d.draw.text((x0 + 19, block_top + 16), "01", font=d.font_tiny, fill=WHITE)
+    d.draw.text((x0 + 52, block_top + 14), "业绩追踪", font=d.font_h2, fill=NAVY)
+    d.draw.line((x0 + 14, block_top + title_h - 2, x0 + content_w - 14, block_top + title_h - 2), fill=NAVY, width=1)
+
+    def draw_perf_row(row_label: str, side_color, values: dict, y: int):
+        d.round_rect((x0 + pad, y + 4, x0 + pad + side_w, y + row_h - 4), side_color, radius=8)
         chars = list(row_label)
-        ch_h = 16
-        start_y = y + (row_h - 8 - len(chars) * ch_h) // 2
+        ch_h = 18
+        start_y = y + (row_h - len(chars) * ch_h) // 2
         for i, ch in enumerate(chars):
             tw = int(d.draw.textlength(ch, font=d.font_side))
-            d.draw.text((x0 + 12 + (side_w - tw) // 2, start_y + i * ch_h), ch, font=d.font_side, fill=WHITE)
+            d.draw.text((x0 + pad + (side_w - tw) // 2, start_y + i * ch_h), ch, font=d.font_side, fill=WHITE)
 
-        grid_x = x0 + 12 + side_w + 8
-        grid_w = content_w - (grid_x - x0) - 12
-        cell_w = grid_w // 4
-        icon_color = TEAL if row_label == "基量" else BLUE
+        grid_x = x0 + pad + side_w + 6
+        grid_w = content_w - (grid_x - x0) - pad
+        n = len(metrics_def)
+        cell_w = grid_w // n
+        row_accent = TEAL if row_label == "基量" else NAVY
+
+        d.draw.rectangle((grid_x, y + 4, grid_x + cell_w * n, y + row_h - 4), outline=LINE, width=1)
+
         for i, (key, suffix, icon) in enumerate(metrics_def):
             cx1 = grid_x + i * cell_w
-            cx2 = cx1 + cell_w - 6
-            cell_h = row_h - 8
-            d.round_rect((cx1, y, cx2, y + cell_h), WHITE, outline=LINE, radius=8)
-            # 标题 / 数字 / 图标 全部水平+垂直居中堆叠
-            label = f"{row_label}{suffix}"
-            lw = int(d.draw.textlength(label, font=d.font_tiny))
-            val = str(values.get(key) or "—")
-            color = growth_color(val) if key == "growth_rate" else NAVY
-            vw = int(d.draw.textlength(val, font=d.font_kpi_lg))
+            cx2 = cx1 + cell_w
+            if i > 0:
+                d.draw.line((cx1, y + 4, cx1, y + row_h - 4), fill=LINE, width=1)
+
+            if key in ("order_progress", "growth_rate"):
+                label = suffix  # 订单进度 / 增长率（截图不加整体/基量前缀）
+            else:
+                label = f"{row_label}{suffix}"
+
+            val = fmt_empty(values.get(key))
+            if key == "growth_rate":
+                num_color = growth_color(val) if val else row_accent
+                if val.startswith("+"):
+                    icon_color = GREEN
+                elif val.startswith("-"):
+                    icon_color = RED
+                else:
+                    icon_color = row_accent
+            else:
+                num_color = row_accent
+                icon_color = TEAL if row_label == "基量" else BLUE
+
             mid = (cx1 + cx2) // 2
-            d.draw.text((mid - lw // 2, y + 10), label, font=d.font_tiny, fill=MUTED)
-            d.draw.text((mid - vw // 2, y + 30), val, font=d.font_kpi_lg, fill=color)
-            iw, ih = 30, 22
-            draw_metric_icon(icon, (mid - iw // 2, y + cell_h - 28, mid + iw // 2, y + cell_h - 6), icon_color)
+            lw = int(d.draw.textlength(label, font=d.font_tiny))
+            d.draw.text((mid - lw // 2, y + 14), label, font=d.font_tiny, fill=MUTED)
+            if val:
+                vw = int(d.draw.textlength(val, font=d.font_kpi_lg))
+                d.draw.text((mid - vw // 2, y + 38), val, font=d.font_kpi_lg, fill=num_color)
+            draw_metric_icon(icon, (mid - 16, y + row_h - 36, mid + 16, y + row_h - 12), icon_color)
 
-    block_top = d.y
-    row_h = 102
-    block_h = 34 + row_h * 2 + 18
-    d.round_rect((x0, block_top, x0 + content_w, block_top + block_h), SOFT_BLUE, outline=LINE, radius=12)
-    tab = "01 业绩追踪"
-    tab_w = int(d.draw.textlength(tab, font=d.font_tiny)) + 20
-    d.round_rect((x0 + 14, block_top + 10, x0 + 14 + tab_w, block_top + 30), NAVY, radius=6)
-    d.draw.text((x0 + 24, block_top + 12), tab, font=d.font_tiny, fill=WHITE)
-
-    draw_perf_row("整体", NAVY, overall, block_top + 38, row_h)
-    draw_perf_row("基量", TEAL, base, block_top + 38 + row_h, row_h)
+    draw_perf_row("整体", NAVY, overall, block_top + title_h)
+    draw_perf_row("基量", TEAL, base, block_top + title_h + row_h)
     d.y = block_top + block_h + 14
 
     def section_start(num: str, title: str, height_guess: int = 40):
@@ -688,9 +731,9 @@ def render(data: dict, out: Path) -> None:
         yy += 36
     d.y = top + box_h + 14
 
-    # 底部：左数据源 / 右制作部门（统一固定文案）
-    left_footer = "【数据源：CRM | SFA | 终端巡检系统 | 市场活动平台 】"
-    right_footer = "【 制作部门：数据组】"
+    # 底部：左数据源 / 右制作部门（统一固定文案，无【】）
+    left_footer = "数据源：CRM | SFA | 终端巡检系统 | 市场活动平台"
+    right_footer = "制作部门：数据组"
     d.draw.text((x0, d.y), left_footer, font=d.font_tiny, fill=MUTED)
     rw = int(d.draw.textlength(right_footer, font=d.font_tiny))
     d.draw.text((x0 + content_w - rw, d.y), right_footer, font=d.font_tiny, fill=MUTED)

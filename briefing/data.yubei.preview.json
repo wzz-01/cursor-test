@@ -17,12 +17,14 @@
       "budget": "582万",
       "sales": "587万",
       "achieve_rate": "100.8%",
+      "order_progress": "",
       "growth_rate": "+20.9%"
     },
     "base": {
       "budget": "450万",
       "sales": "481万",
       "achieve_rate": "106.8%",
+      "order_progress": "",
       "growth_rate": "+20.3%"
     }
   },
