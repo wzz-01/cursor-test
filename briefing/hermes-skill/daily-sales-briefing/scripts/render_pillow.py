@@ -35,15 +35,24 @@ WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "
 
 
 def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[str, int]]:
-    """family: yahei=微软雅黑, heiti=黑体。"""
+    """family: yahei=微软雅黑, heiti=黑体, kaiti=楷体。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
 
     def win_set(root: Path) -> list[tuple[str, int]]:
+        if family == "kaiti":
+            return [
+                (str(root / "simkai.ttf"), 0),  # 楷体
+                (str(root / "SIMKAI.TTF"), 0),
+                (str(root / "STKAITI.TTF"), 0),
+                (str(root / "STKaiti.ttf"), 0),
+                (str(root / "simhei.ttf"), 0),
+                (str(root / "msyhbd.ttc"), 0),
+            ]
         if family == "heiti":
             return [
-                (str(root / "simhei.ttf"), 0),  # 黑体
+                (str(root / "simhei.ttf"), 0),
                 (str(root / "SIMHEI.TTF"), 0),
                 (str(root / "msyhbd.ttc"), 0),
                 (str(root / "msyh.ttc"), 0),
@@ -61,7 +70,14 @@ def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[st
             (str(root / "msjh.ttc"), 0),
         ]
 
-    if family == "heiti":
+    if family == "kaiti":
+        linux = [
+            ("/usr/share/fonts/truetype/arphic/ukai.ttc", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc", 0),
+            ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ]
+    elif family == "heiti":
         linux = [
             ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
             ("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 0),
@@ -92,7 +108,7 @@ def load_font(size: int, bold: bool = False, family: str = "yahei"):
                 last_error = exc2
                 continue
     raise RuntimeError(
-        "未找到中文字体（雅黑/黑体）。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 或 simhei.ttf 可读。"
+        "未找到中文字体（雅黑/黑体/楷体）。WSL 请确认 /mnt/c/Windows/Fonts 下有 msyh.ttc / simkai.ttf。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
 
@@ -133,17 +149,18 @@ class Drawer:
         self.y = self.pad
         self.img = Image.new("RGB", (width, 3600), PAGE_BG)
         self.draw = ImageDraw.Draw(self.img)
-        self.font_title = load_font(36, bold=True)
-        self.font_h2 = load_font(16, bold=True)
-        self.font_body = load_font(14, bold=True)
-        self.font_focus = load_font(26, bold=True, family="heiti")  # 黑体加粗，再放大两号（20→26）
-        self.font_small = load_font(13)
-        self.font_tiny = load_font(11)
-        self.font_kpi = load_font(22, bold=True)
-        self.font_stat = load_font(20, bold=True)
-        self.font_badge_time = load_font(22, bold=True)
-        self.font_badge_label = load_font(12)
-        self.font_side = load_font(14, bold=True)
+        # 其余正文：微软雅黑；标题/时间徽章/聚焦语：楷体加粗加大
+        self.font_title = load_font(44, bold=True, family="kaiti")  # 销售经营晨报
+        self.font_h2 = load_font(16, bold=True, family="yahei")
+        self.font_body = load_font(14, bold=True, family="yahei")
+        self.font_focus = load_font(32, bold=True, family="kaiti")  # 聚焦语
+        self.font_small = load_font(13, family="yahei")
+        self.font_tiny = load_font(11, family="yahei")
+        self.font_kpi = load_font(22, bold=True, family="yahei")
+        self.font_stat = load_font(20, bold=True, family="yahei")
+        self.font_badge_time = load_font(28, bold=True, family="kaiti")  # 08:00
+        self.font_badge_label = load_font(16, bold=True, family="kaiti")  # 晨间速递
+        self.font_side = load_font(14, bold=True, family="yahei")
 
     def text_height(self, text: str, font, max_width: int) -> int:
         lines = self.wrap(text, font, max_width)
