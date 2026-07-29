@@ -128,7 +128,8 @@ hermes skills list
 | 问题 | 处理 |
 |------|------|
 | 下载失败 / 404 | 确认分支名是 `cursor/liaoning-briefing-png-c78d`；或改用浏览器手动下载 |
-| 找不到 python/py | 安装 Python 并勾选 Add to PATH，或用 Hermes 自带的 Python 环境执行 pip |
+| 找不到 python/py | 安装 Python 并勾选 Add to PATH；或用 `python` 代替 `py -3` |
+| PNG 中文乱码/发糊 | 旧脚本未带 Windows 字体。重新执行步骤 2 覆盖下载 `render_pillow.py`，再用 `python` 重跑步骤 4 |
 | Hermes 看不到技能 | 确认路径是 `%USERPROFILE%\.hermes\skills\daily-sales-briefing\SKILL.md`，然后新会话 |
 | 只要文字不要图 | 正常；未提「简报/PNG/一图」时不应强制出图 |
 | 会不会带上薪酬制度文件 | 不会；本方案只下载 Skill 这 5 个文件 |
