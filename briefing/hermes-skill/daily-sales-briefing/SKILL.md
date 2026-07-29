@@ -78,7 +78,7 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 |------|------|
 | ① 全品类/整体：预算、销额、达成、增长 | `performance.overall` |
 | ① 基量/大单品：预算、销额、达成、增长 | `performance.base` |
-| ① 销售组高低 | `section_01` |
+| ① 销售组明细 | `section_01.rows`（表格） |
 | ② 下滑城市/组/客户、后20% | `section_02` + `warnings` |
 | ③ 年累计进度 | `section_03` |
 | ④ 昨日订单 | `section_04` |

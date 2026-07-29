@@ -34,13 +34,20 @@ PAGE_BG = (250, 248, 242)
 WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
 
-def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
-    """一律优先微软雅黑。"""
+def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[str, int]]:
+    """family: yahei=微软雅黑, heiti=黑体。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
 
     def win_set(root: Path) -> list[tuple[str, int]]:
+        if family == "heiti":
+            return [
+                (str(root / "simhei.ttf"), 0),  # 黑体
+                (str(root / "SIMHEI.TTF"), 0),
+                (str(root / "msyhbd.ttc"), 0),
+                (str(root / "msyh.ttc"), 0),
+            ]
         if bold:
             return [
                 (str(root / "msyhbd.ttc"), 0),
@@ -54,18 +61,25 @@ def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
             (str(root / "msjh.ttc"), 0),
         ]
 
-    linux = [
-        ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
-        ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
-        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
-    ]
+    if family == "heiti":
+        linux = [
+            ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 0),
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ]
+    else:
+        linux = [
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+            ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
+        ]
     return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
 @lru_cache(maxsize=64)
-def load_font(size: int, bold: bool = False):
+def load_font(size: int, bold: bool = False, family: str = "yahei"):
     last_error = None
-    for path, index in _font_candidates(bold=bold):
+    for path, index in _font_candidates(bold=bold, family=family):
         if not Path(path).exists():
             continue
         try:
@@ -78,7 +92,7 @@ def load_font(size: int, bold: bool = False):
                 last_error = exc2
                 continue
     raise RuntimeError(
-        "未找到微软雅黑等中文字体。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 可读。"
+        "未找到中文字体（雅黑/黑体）。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 或 simhei.ttf 可读。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
 
@@ -122,7 +136,7 @@ class Drawer:
         self.font_title = load_font(36, bold=True)
         self.font_h2 = load_font(16, bold=True)
         self.font_body = load_font(14, bold=True)
-        self.font_focus = load_font(20, bold=True)  # 聚焦语：放大两个号（14→20）
+        self.font_focus = load_font(26, bold=True, family="heiti")  # 黑体加粗，再放大两号（20→26）
         self.font_small = load_font(13)
         self.font_tiny = load_font(11)
         self.font_kpi = load_font(22, bold=True)
@@ -220,8 +234,8 @@ def render(data: dict, out: Path) -> None:
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
     focus_font = d.font_focus
     text_w = int(d.draw.textlength(focus, font=focus_font))
-    icon_gap = 12
-    icon_size = 12
+    icon_gap = 10
+    icon_size = 10
     group_w = icon_size * 2 + icon_gap + text_w
     start_x = x0 + max(0, (content_w - group_w) // 2)
     ty = d.y + 12
@@ -232,7 +246,7 @@ def render(data: dict, out: Path) -> None:
     bbox = focus_font.getbbox(focus)
     text_h = bbox[3] - bbox[1]
     d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY)
-    d.y += 52
+    d.y += 44
 
     # 01 业绩追踪：整体 / 基量 两行四列
     perf = data.get("performance") or {}
@@ -312,30 +326,129 @@ def render(data: dict, out: Path) -> None:
         d.draw.text((x0 + 52, top + 18), title, font=d.font_h2, fill=NAVY)
         return top
 
-    # Section 02 bars（原销售组对比）
-    items = data["section_01"]["items"]
-    sec_h = 56 + len(items) * 42
-    top = section_start("02", data["section_01"]["title"], sec_h)
-    # redraw with exact height already set via estimate; draw content
-    yy = top + 52
-    for item in items:
-        rate = item.get("rate")
-        name = item["name"]
-        note = item.get("note") or ""
-        d.draw_text(x0 + 18, yy, name, d.font_small, INK)
-        track = (x0 + 150, yy + 4, x0 + content_w - 80, yy + 16)
-        d.round_rect(track, (237, 242, 247), radius=8)
-        width_ratio = 0.35 if rate is None else max(0.08, min(1.0, rate / 100))
-        fill_w = int((track[2] - track[0]) * width_ratio)
-        color = RED if (rate is not None and rate < 60) else ORANGE if (rate is None or rate < 80) else BLUE
-        d.round_rect((track[0], track[1], track[0] + fill_w, track[3]), color, radius=8)
-        rate_text = "—" if rate is None else f"{rate:.1f}%"
-        d.draw_text(x0 + content_w - 70, yy, rate_text, d.font_small, NAVY)
-        d.draw_text(x0 + 150, yy + 18, note, d.font_tiny, MUTED)
-        yy += 42
-    d.y = top + sec_h + 12
+    # Section 02：分区/销售组业绩进度表
+    s1 = data.get("section_01") or {}
+    rows = s1.get("rows") or []
+    # 兼容旧版 items
+    if not rows and s1.get("items"):
+        rows = [
+            {
+                "name": it.get("name"),
+                "achieve_rate": it.get("rate"),
+                "growth_rate": None,
+                "base_achieve_rate": None,
+                "order_amount_5d": "—",
+            }
+            for it in s1["items"]
+        ]
+    warn_below = float(s1.get("warn_below") or 90)
+    title_02 = s1.get("title") or "分区 / 销售组业绩进度"
 
-    # Section 02 two columns
+    def to_pct(v):
+        if v is None or v == "" or v == "—":
+            return None
+        if isinstance(v, (int, float)):
+            return float(v)
+        text = str(v).replace("%", "").replace(" ", "").replace("−", "-")
+        try:
+            return float(text)
+        except Exception:
+            return None
+
+    def fmt_pct(v):
+        p = to_pct(v)
+        return "—" if p is None else f"{p:.1f}%"
+
+    def fmt_growth(v):
+        p = to_pct(v)
+        if p is None:
+            return "—"
+        if p > 0:
+            return f"+{p:.1f}%"
+        return f"{p:.1f}%"
+
+    header_h = 36
+    row_h_tbl = 40
+    title_h = 40
+    table_h = title_h + header_h + max(1, len(rows)) * row_h_tbl + 16
+    top = d.y
+    d.round_rect((x0, top, x0 + content_w, top + table_h), WHITE, outline=LINE, radius=12)
+    # 标题
+    d.round_rect((x0 + 14, top + 12, x0 + 26, top + 24), NAVY, radius=3)
+    d.draw.text((x0 + 34, top + 10), f"02  {title_02}", font=d.font_h2, fill=NAVY)
+
+    # 列宽
+    cols = [
+        ("name", "经销组", 0.22),
+        ("achieve_rate", "达成率", 0.20),
+        ("growth_rate", "增长率", 0.14),
+        ("base_achieve_rate", "大单品达成率", 0.22),
+        ("order_amount_5d", "近5日下单额", 0.22),
+    ]
+    usable = content_w - 28
+    col_ws = [int(usable * c[2]) for c in cols]
+    col_ws[-1] = usable - sum(col_ws[:-1])
+    table_x = x0 + 14
+    head_y = top + title_h
+    d.draw.rectangle((table_x, head_y, table_x + usable, head_y + header_h), fill=NAVY)
+
+    cx = table_x
+    for (key, label, _), cw in zip(cols, col_ws):
+        tw = int(d.draw.textlength(label, font=d.font_small))
+        d.draw.text((cx + (cw - tw) // 2, head_y + 10), label, font=d.font_small, fill=WHITE)
+        cx += cw
+
+    def draw_rate_cell(x, y, w, h, value, bar_color, text_color):
+        pct = to_pct(value)
+        text = fmt_pct(value)
+        d.draw.text((x + 8, y + 12), text, font=d.font_small, fill=text_color)
+        if pct is None:
+            return
+        track = (x + 70, y + 16, x + w - 10, y + 26)
+        if track[2] <= track[0] + 20:
+            return
+        d.round_rect(track, (232, 236, 241), radius=4)
+        fill_ratio = max(0.0, min(1.0, pct / 100.0))
+        fill_w = int((track[2] - track[0]) * fill_ratio)
+        if fill_w > 0:
+            d.round_rect((track[0], track[1], track[0] + fill_w, track[3]), bar_color, radius=4)
+
+    for i, row in enumerate(rows):
+        ry = head_y + header_h + i * row_h_tbl
+        if i % 2 == 1:
+            d.draw.rectangle((table_x, ry, table_x + usable, ry + row_h_tbl), fill=(247, 250, 252))
+        d.draw.line((table_x, ry + row_h_tbl, table_x + usable, ry + row_h_tbl), fill=LINE, width=1)
+
+        achieve = to_pct(row.get("achieve_rate"))
+        warn = achieve is not None and achieve < warn_below
+        text_color = RED if warn else INK
+        bar_overall = RED if warn else BLUE
+        bar_base = RED if warn else TEAL
+
+        cx = table_x
+        # name
+        d.draw.text((cx + 10, ry + 12), str(row.get("name") or "—"), font=d.font_small, fill=text_color)
+        cx += col_ws[0]
+        # achieve
+        draw_rate_cell(cx, ry, col_ws[1], row_h_tbl, row.get("achieve_rate"), bar_overall, text_color)
+        cx += col_ws[1]
+        # growth
+        gtxt = fmt_growth(row.get("growth_rate"))
+        gcolor = RED if warn else growth_color(gtxt)
+        tw = int(d.draw.textlength(gtxt, font=d.font_small))
+        d.draw.text((cx + (col_ws[2] - tw) // 2, ry + 12), gtxt, font=d.font_small, fill=gcolor)
+        cx += col_ws[2]
+        # base achieve
+        draw_rate_cell(cx, ry, col_ws[3], row_h_tbl, row.get("base_achieve_rate"), bar_base, text_color)
+        cx += col_ws[3]
+        # order amount
+        amt = str(row.get("order_amount_5d") or "—")
+        tw = int(d.draw.textlength(amt, font=d.font_small))
+        d.draw.text((cx + (col_ws[4] - tw) // 2, ry + 12), amt, font=d.font_small, fill=text_color)
+
+    d.y = top + table_h + 14
+
+    # Section 03 two columns
     left_w = int(content_w * 0.52)
     right_w = content_w - left_w - 12
     cities = "  ".join(data["section_02"].get("cities") or []) or "—"
