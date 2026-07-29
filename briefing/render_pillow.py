@@ -79,12 +79,12 @@ def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[st
     def win_set(root: Path) -> list[tuple[str, int]]:
         if family == "kaiti":
             return [
-                (str(bundled / "LXGWWenKai-Bold.ttf"), 0),  # 霞鹜文楷（楷体风格，可打包）
-                (str(root / "simkai.ttf"), 0),
+                (str(root / "simkai.ttf"), 0),  # Windows 楷体（最像“楷体”）
                 (str(root / "SIMKAI.TTF"), 0),
-                (str(root / "STKAITI.TTF"), 0),
+                (str(root / "STKAITI.TTF"), 0),  # 华文楷体
                 (str(root / "STKaiti.ttf"), 0),
                 (str(root / "simkai.ttc"), 0),
+                (str(bundled / "LXGWWenKai-Bold.ttf"), 0),  # 开源文楷兜底
             ]
         if family == "heiti":
             return [
@@ -282,13 +282,13 @@ def render(data: dict, out: Path) -> None:
     d.draw.ellipse((cx - 10, cy - 10, cx + 10, cy + 10), outline=WHITE, width=2)
     d.draw.line((cx, cy, cx, cy - 6), fill=WHITE, width=2)
     d.draw.line((cx, cy, cx + 5, cy + 3), fill=WHITE, width=2)
-    d.draw.text((time_box[0] + 46, header_top + 12), clock, font=d.font_badge_time, fill=WHITE)
+    d.draw.text((time_box[0] + 46, header_top + 12), clock, font=d.font_badge_time, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
     label = "晨间速递"
     lw = int(d.draw.textlength(label, font=d.font_badge_label))
-    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 48), label, font=d.font_badge_label, fill=WHITE)
+    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 48), label, font=d.font_badge_label, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
 
-    # 左侧标题（楷体）+ 副标题（雅黑）
-    d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY)
+    # 左侧标题（楷体加粗）+ 副标题（雅黑）
+    d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY, stroke=1)
     d.draw_text(x0, header_top + 56, sub_line, d.font_small, MUTED, content_w - badge_w - 24)
     d.y = header_top + badge_h + 12
 
@@ -312,7 +312,7 @@ def render(data: dict, out: Path) -> None:
     text_x = start_x + icon_size * 2 + icon_gap
     bbox = focus_font.getbbox(focus)
     text_h = bbox[3] - bbox[1]
-    d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY)
+    d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY, stroke_width=1, stroke_fill=NAVY)
     d.y += 58
 
     # 01 业绩追踪：整体 / 基量 两行四列
