@@ -1,0 +1,125 @@
+{
+  "$id": "schema.daily_sales.json",
+  "title": "省区日销售简报",
+  "description": "适用于任意省区的 daily_sales_briefing，不绑定辽宁",
+  "type": "object",
+  "required": [
+    "meta",
+    "headline",
+    "kpis",
+    "section_01",
+    "section_02",
+    "section_03",
+    "section_04",
+    "warnings",
+    "actions",
+    "footer"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["title", "subtitle", "region", "as_of_date", "generated_at", "owner"],
+      "properties": {
+        "title": { "type": "string", "description": "{region}经营简报" },
+        "subtitle": { "type": "string", "default": "销售经营日更" },
+        "region": { "type": "string", "description": "标准省区名，如 河南经销省区" },
+        "as_of_date": { "type": "string", "description": "YYYY-MM-DD" },
+        "generated_at": { "type": "string", "description": "YYYY-MM-DD HH:MM" },
+        "owner": { "type": "string" }
+      }
+    },
+    "headline": { "type": "string" },
+    "kpis": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["label", "value", "tone"],
+        "properties": {
+          "label": { "type": "string" },
+          "value": { "type": "string" },
+          "sub": { "type": "string" },
+          "badge": { "type": "string" },
+          "tone": { "enum": ["ok", "warn", "danger"] }
+        }
+      }
+    },
+    "section_01": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "rate": { "type": ["number", "null"] },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "section_02": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "cities": { "type": "array", "items": { "type": "string" } },
+        "groups": { "type": "array", "items": { "type": "string" } },
+        "customers": { "type": "array", "items": { "type": "string" } },
+        "bottom20_groups": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "section_03": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "sales": { "type": "string" },
+        "delta": { "type": "string" },
+        "progress": { "type": "string" },
+        "peer_progress": { "type": "string" },
+        "yoy": { "type": "string" },
+        "progress_rank": { "type": ["integer", "null"] },
+        "growth_rank": { "type": ["integer", "null"] },
+        "unit_count": { "type": ["integer", "null"] }
+      }
+    },
+    "section_04": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "order_amount": { "type": "string" },
+        "order_qty": { "type": ["number", "null"] },
+        "budget_share": { "type": "string" },
+        "budget_base": { "type": "string" },
+        "no_order_groups_5d": { "type": "array", "items": { "type": "string" } },
+        "no_order_customers_month": { "type": "array", "items": { "type": "string" } },
+        "yesterday_customers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string" },
+              "name": { "type": "string" },
+              "group": { "type": "string" },
+              "amount": { "type": "string" },
+              "qty": { "type": ["number", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } },
+    "actions": { "type": "array", "items": { "type": "string" } },
+    "footer": {
+      "type": "object",
+      "properties": {
+        "sources": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}
