@@ -1,38 +1,64 @@
 {
   "meta": {
     "brand_title": "销售经营晨报",
-    "title": "模拟省区经营简报",
+    "title": "河南经销省区经营简报（模拟）",
     "subtitle": "销售经营日更",
     "scope": "省区经营管理",
-    "region": "模拟省区",
+    "region": "河南经销省区",
     "as_of_date": "2026-07-24",
     "generated_at": "2026-07-24 08:00",
     "report_time": "08:00",
     "data_cutoff": "07:30",
-    "owner": "模拟数据（仅看版式）"
+    "owner": "模拟数据"
   },
   "focus": "聚焦预算进度、客户下单与一线执行",
   "performance": {
     "overall": {
-      "budget": "1,280万",
-      "sales": "1,185万",
-      "achieve_rate": "92.6%",
-      "growth_rate": "+8.3%"
+      "budget": "—",
+      "sales": "—",
+      "achieve_rate": "—",
+      "growth_rate": "—"
     },
     "base": {
-      "budget": "860万",
-      "sales": "792万",
-      "achieve_rate": "92.1%",
-      "growth_rate": "+5.6%"
+      "budget": "—",
+      "sales": "—",
+      "achieve_rate": "—",
+      "growth_rate": "—"
     }
   },
   "headline": "",
   "section_01": {
-    "title": "销售组达成对比",
-    "items": [
-      { "name": "销售组A", "rate": null, "note": "" },
-      { "name": "销售组B", "rate": null, "note": "" },
-      { "name": "销售组C", "rate": null, "note": "" }
+    "title": "分区 / 销售组业绩进度",
+    "warn_below": 90,
+    "rows": [
+      {
+        "name": "濮鹤经销组",
+        "achieve_rate": 117.0,
+        "growth_rate": 34.5,
+        "base_achieve_rate": 123.6,
+        "order_amount_5d": "43万元"
+      },
+      {
+        "name": "安阳经销组",
+        "achieve_rate": 104.0,
+        "growth_rate": 33.2,
+        "base_achieve_rate": 113.0,
+        "order_amount_5d": "14万元"
+      },
+      {
+        "name": "焦济经销组",
+        "achieve_rate": 87.7,
+        "growth_rate": -2.5,
+        "base_achieve_rate": 89.8,
+        "order_amount_5d": "19万元"
+      },
+      {
+        "name": "新乡经销组",
+        "achieve_rate": 87.6,
+        "growth_rate": 7.8,
+        "base_achieve_rate": 92.5,
+        "order_amount_5d": "39万元"
+      }
     ]
   },
   "section_02": {
@@ -64,13 +90,13 @@
     "yesterday_customers": []
   },
   "warnings": [
-    "以下为模拟版式，非真实经营数据"
+    "达成率低于90%的销售组标红（焦济、新乡）"
   ],
   "actions": [
-    "确认版式后，用真实查询结果替换 performance 与各 section"
+    "确认第02模块表格版式"
   ],
   "footer": {
-    "sources": "模拟数据",
-    "note": "仅用于预览 PNG 格式；整体=全品类，基量=大单品"
+    "sources": "用户提供四组模拟数据",
+    "note": "濮鹤/安阳/焦济/新乡"
   }
 }

@@ -93,7 +93,26 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 }
 ```
 
-缺数填 `"—"`，禁止编造。字体固定微软雅黑。
+`section_01` 表格示例：
+
+```json
+"section_01": {
+  "title": "分区 / 销售组业绩进度",
+  "warn_below": 90,
+  "rows": [
+    {
+      "name": "濮鹤经销组",
+      "achieve_rate": 117.0,
+      "growth_rate": 34.5,
+      "base_achieve_rate": 123.6,
+      "order_amount_5d": "43万元"
+    }
+  ]
+}
+```
+
+达成率低于 `warn_below`（默认90）的整行标红。
+
 
 ## Pitfalls
 
