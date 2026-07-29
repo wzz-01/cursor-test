@@ -247,23 +247,23 @@ def render(data: dict, out: Path) -> None:
         d.draw.line((x0, d.y + dy, x0 + content_w, d.y + dy), fill=NAVY, width=w)
     d.y += 18
 
-    # 聚焦语：放大、整行居中（图标+文字作为一组居中）
+    # 聚焦语：楷体加粗加大、整行居中
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
     focus_font = d.font_focus
     text_w = int(d.draw.textlength(focus, font=focus_font))
-    icon_gap = 10
-    icon_size = 10
+    icon_gap = 14
+    icon_size = 14
     group_w = icon_size * 2 + icon_gap + text_w
     start_x = x0 + max(0, (content_w - group_w) // 2)
-    ty = d.y + 12
+    ty = d.y + 16
     tx = start_x + icon_size
     d.draw.ellipse((tx - icon_size, ty - icon_size, tx + icon_size, ty + icon_size), outline=ORANGE, width=3)
-    d.draw.ellipse((tx - 4, ty - 4, tx + 4, ty + 4), fill=ORANGE)
+    d.draw.ellipse((tx - 5, ty - 5, tx + 5, ty + 5), fill=ORANGE)
     text_x = start_x + icon_size * 2 + icon_gap
     bbox = focus_font.getbbox(focus)
     text_h = bbox[3] - bbox[1]
     d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY)
-    d.y += 44
+    d.y += 58
 
     # 01 业绩追踪：整体 / 基量 两行四列
     perf = data.get("performance") or {}

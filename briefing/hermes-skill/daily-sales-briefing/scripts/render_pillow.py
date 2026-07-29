@@ -223,24 +223,24 @@ def render(data: dict, out: Path) -> None:
     sub_line = f"{scope}  |  {date_line}  |  数据截至 {data_cutoff}"
 
     header_top = d.y
-    # 右侧「晨间速递」徽章
-    badge_w, badge_h = 118, 64
+    # 右侧「晨间速递」徽章（楷体加大后加宽加高）
+    badge_w, badge_h = 138, 78
     time_box = (d.width - d.pad - badge_w, header_top, d.width - d.pad, header_top + badge_h)
     d.round_rect(time_box, NAVY, radius=12)
     # 简易时钟图标（白圈）
-    cx, cy = time_box[0] + 28, header_top + 22
-    d.draw.ellipse((cx - 9, cy - 9, cx + 9, cy + 9), outline=WHITE, width=2)
-    d.draw.line((cx, cy, cx, cy - 5), fill=WHITE, width=2)
-    d.draw.line((cx, cy, cx + 4, cy + 2), fill=WHITE, width=2)
-    d.draw.text((time_box[0] + 42, header_top + 10), clock, font=d.font_badge_time, fill=WHITE)
+    cx, cy = time_box[0] + 30, header_top + 26
+    d.draw.ellipse((cx - 10, cy - 10, cx + 10, cy + 10), outline=WHITE, width=2)
+    d.draw.line((cx, cy, cx, cy - 6), fill=WHITE, width=2)
+    d.draw.line((cx, cy, cx + 5, cy + 3), fill=WHITE, width=2)
+    d.draw.text((time_box[0] + 46, header_top + 12), clock, font=d.font_badge_time, fill=WHITE)
     label = "晨间速递"
     lw = int(d.draw.textlength(label, font=d.font_badge_label))
-    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 40), label, font=d.font_badge_label, fill=WHITE)
+    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 48), label, font=d.font_badge_label, fill=WHITE)
 
-    # 左侧标题 + 副标题
+    # 左侧标题（楷体）+ 副标题（雅黑）
     d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY)
-    d.draw_text(x0, header_top + 48, sub_line, d.font_small, MUTED, content_w - badge_w - 24)
-    d.y = header_top + badge_h + 10
+    d.draw_text(x0, header_top + 56, sub_line, d.font_small, MUTED, content_w - badge_w - 24)
+    d.y = header_top + badge_h + 12
 
     # 顶栏分隔三线
     for dy, w in ((0, 1), (3, 3), (8, 1)):
