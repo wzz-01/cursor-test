@@ -220,8 +220,8 @@ def render(data: dict, out: Path) -> None:
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
     focus_font = d.font_focus
     text_w = int(d.draw.textlength(focus, font=focus_font))
-    icon_gap = 10
-    icon_size = 10
+    icon_gap = 12
+    icon_size = 12
     group_w = icon_size * 2 + icon_gap + text_w
     start_x = x0 + max(0, (content_w - group_w) // 2)
     ty = d.y + 12
@@ -232,7 +232,7 @@ def render(data: dict, out: Path) -> None:
     bbox = focus_font.getbbox(focus)
     text_h = bbox[3] - bbox[1]
     d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY)
-    d.y += 44
+    d.y += 52
 
     # 01 业绩追踪：整体 / 基量 两行四列
     perf = data.get("performance") or {}

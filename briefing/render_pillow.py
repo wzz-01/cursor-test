@@ -34,13 +34,20 @@ PAGE_BG = (250, 248, 242)
 WEEKDAY_CN = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 
 
-def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
-    """一律优先微软雅黑。"""
+def _font_candidates(bold: bool = False, family: str = "yahei") -> list[tuple[str, int]]:
+    """family: yahei=微软雅黑, heiti=黑体。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
     wsl_fonts = Path("/mnt/c/Windows/Fonts")
 
     def win_set(root: Path) -> list[tuple[str, int]]:
+        if family == "heiti":
+            return [
+                (str(root / "simhei.ttf"), 0),  # 黑体
+                (str(root / "SIMHEI.TTF"), 0),
+                (str(root / "msyhbd.ttc"), 0),
+                (str(root / "msyh.ttc"), 0),
+            ]
         if bold:
             return [
                 (str(root / "msyhbd.ttc"), 0),
@@ -54,18 +61,25 @@ def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
             (str(root / "msjh.ttc"), 0),
         ]
 
-    linux = [
-        ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
-        ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
-        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
-    ]
+    if family == "heiti":
+        linux = [
+            ("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 0),
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+        ]
+    else:
+        linux = [
+            ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+            ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
+            ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
+        ]
     return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
 @lru_cache(maxsize=64)
-def load_font(size: int, bold: bool = False):
+def load_font(size: int, bold: bool = False, family: str = "yahei"):
     last_error = None
-    for path, index in _font_candidates(bold=bold):
+    for path, index in _font_candidates(bold=bold, family=family):
         if not Path(path).exists():
             continue
         try:
@@ -78,7 +92,7 @@ def load_font(size: int, bold: bool = False):
                 last_error = exc2
                 continue
     raise RuntimeError(
-        "未找到微软雅黑等中文字体。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 可读。"
+        "未找到中文字体（雅黑/黑体）。WSL 请确认 /mnt/c/Windows/Fonts/msyh.ttc 或 simhei.ttf 可读。"
         + (f" 最后错误: {last_error}" if last_error else "")
     )
 
