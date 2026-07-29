@@ -31,30 +31,34 @@ PAGE_BG = (238, 243, 248)
 
 
 def _font_candidates(bold: bool = False) -> list[tuple[str, int]]:
-    """返回 (字体路径, ttc索引) 列表。Windows 优先微软雅黑，避免中文乱码。"""
+    """返回 (字体路径, ttc索引) 列表。Windows / WSL 优先微软雅黑，避免中文乱码。"""
     windir = os.environ.get("WINDIR", r"C:\Windows")
     win_fonts = Path(windir) / "Fonts"
-    if bold:
-        windows = [
-            (str(win_fonts / "msyhbd.ttc"), 0),  # 微软雅黑 Bold
-            (str(win_fonts / "msyh.ttc"), 0),
-            (str(win_fonts / "simhei.ttf"), 0),  # 黑体
-            (str(win_fonts / "simsun.ttc"), 1),
+    # WSL 可直接读 Windows 字体，无需 sudo apt 装字体
+    wsl_fonts = Path("/mnt/c/Windows/Fonts")
+
+    def win_set(root: Path) -> list[tuple[str, int]]:
+        if bold:
+            return [
+                (str(root / "msyhbd.ttc"), 0),
+                (str(root / "msyh.ttc"), 0),
+                (str(root / "simhei.ttf"), 0),
+                (str(root / "simsun.ttc"), 1),
+            ]
+        return [
+            (str(root / "msyh.ttc"), 0),
+            (str(root / "msyhbd.ttc"), 0),
+            (str(root / "simhei.ttf"), 0),
+            (str(root / "simsun.ttc"), 0),
+            (str(root / "msjh.ttc"), 0),
         ]
-    else:
-        windows = [
-            (str(win_fonts / "msyh.ttc"), 0),  # 微软雅黑
-            (str(win_fonts / "msyhbd.ttc"), 0),
-            (str(win_fonts / "simhei.ttf"), 0),
-            (str(win_fonts / "simsun.ttc"), 0),  # 宋体
-            (str(win_fonts / "msjh.ttc"), 0),  # 微软正黑体
-        ]
+
     linux = [
         ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
         ("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", 0),
         ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", 0),
     ]
-    return windows + linux
+    return win_set(win_fonts) + win_set(wsl_fonts) + linux
 
 
 @lru_cache(maxsize=32)
