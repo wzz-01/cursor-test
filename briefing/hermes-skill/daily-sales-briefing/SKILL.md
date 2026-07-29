@@ -71,6 +71,7 @@ python3 "${HERMES_SKILL_DIR}/scripts/render_pillow.py" --data <json路径> --out
 - `section_03` 年累计进度
 - `section_04` 昨日订单
 - `warnings` / `actions` / `footer`（页脚文案由渲染器固定：左「数据源…」右「制作部门：数据组」，JSON footer 可忽略）
+- 输出尺寸固定 **793×1983**（手机竖版长图；内容不足底部补色，过长等比缩小）
 
 文字结论映射：
 

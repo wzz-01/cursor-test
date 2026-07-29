@@ -191,25 +191,26 @@ def growth_color(value: str):
 
 
 class Drawer:
-    def __init__(self, width: int = 900):
+    def __init__(self, width: int = 793, target_height: int = 1983):
         self.width = width
-        self.pad = 28
+        self.target_height = target_height
+        self.pad = 18
         self.y = self.pad
-        self.img = Image.new("RGB", (width, 3600), PAGE_BG)
+        self.img = Image.new("RGB", (width, 4200), PAGE_BG)
         self.draw = ImageDraw.Draw(self.img)
-        # 其余正文：微软雅黑；标题/时间徽章/聚焦语：楷体加粗加大
-        self.font_title = load_font(44, bold=True, family="kaiti")  # 销售经营晨报
-        self.font_h2 = load_font(16, bold=True, family="yahei")
-        self.font_body = load_font(14, bold=True, family="yahei")
-        self.font_focus = load_font(32, bold=True, family="kaiti")  # 聚焦语
-        self.font_small = load_font(13, family="yahei")
-        self.font_tiny = load_font(11, family="yahei")
-        self.font_kpi = load_font(22, bold=True, family="yahei")
-        self.font_kpi_lg = load_font(32, bold=True, family="yahei")  # 业绩追踪数字加大
-        self.font_stat = load_font(20, bold=True, family="yahei")
-        self.font_badge_time = load_font(28, bold=True, family="kaiti")  # 08:00
-        self.font_badge_label = load_font(16, bold=True, family="kaiti")  # 晨间速递
-        self.font_side = load_font(14, bold=True, family="yahei")
+        # 手机竖版：字号略收，保证 793 宽可读
+        self.font_title = load_font(36, bold=True, family="kaiti")  # 销售经营晨报
+        self.font_h2 = load_font(15, bold=True, family="yahei")
+        self.font_body = load_font(13, bold=True, family="yahei")
+        self.font_focus = load_font(24, bold=True, family="kaiti")  # 聚焦语
+        self.font_small = load_font(12, family="yahei")
+        self.font_tiny = load_font(10, family="yahei")
+        self.font_kpi = load_font(18, bold=True, family="yahei")
+        self.font_kpi_lg = load_font(24, bold=True, family="yahei")  # 业绩追踪数字
+        self.font_stat = load_font(17, bold=True, family="yahei")
+        self.font_badge_time = load_font(24, bold=True, family="kaiti")  # 08:00
+        self.font_badge_label = load_font(14, bold=True, family="kaiti")  # 晨间速递
+        self.font_side = load_font(13, bold=True, family="yahei")
 
     def text_height(self, text: str, font, max_width: int) -> int:
         lines = self.wrap(text, font, max_width)
@@ -253,9 +254,33 @@ class Drawer:
         self.draw.rounded_rectangle(box, radius=radius, fill=fill, outline=outline, width=width)
 
     def finish(self, out: Path):
-        cropped = self.img.crop((0, 0, self.width, min(self.y + self.pad, self.img.height)))
+        """裁剪内容后输出固定手机尺寸 793×1983（不足底部补色，过长等比缩小顶对齐）。"""
+        h = min(max(self.y + self.pad, 1), self.img.height)
+        cropped = self.img.crop((0, 0, self.width, h))
+        tw, th = self.width, self.target_height
+        canvas = Image.new("RGB", (tw, th), PAGE_BG)
+        if cropped.height > th:
+            scale = th / float(cropped.height)
+            nw = max(1, int(round(cropped.width * scale)))
+            nh = th
+            resized = cropped.resize((nw, nh), Image.Resampling.LANCZOS)
+            canvas.paste(resized, ((tw - nw) // 2, 0))
+        else:
+            # 宽对齐到目标宽，高度按比例；再贴到画布顶部，底部留白
+            if cropped.width != tw:
+                nh = max(1, int(round(cropped.height * tw / float(cropped.width))))
+                resized = cropped.resize((tw, nh), Image.Resampling.LANCZOS)
+            else:
+                resized = cropped
+            if resized.height > th:
+                scale = th / float(resized.height)
+                resized = resized.resize((max(1, int(round(resized.width * scale))), th), Image.Resampling.LANCZOS)
+                canvas.paste(resized, ((tw - resized.width) // 2, 0))
+            else:
+                canvas.paste(resized, (0, 0))
         out.parent.mkdir(parents=True, exist_ok=True)
-        cropped.save(out, format="PNG")
+        canvas.save(out, format="PNG")
+        print(f"[size] 输出 {tw}x{th}（内容原高 {cropped.height}）")
 
 
 def render(data: dict, out: Path) -> None:
@@ -276,23 +301,23 @@ def render(data: dict, out: Path) -> None:
 
     header_top = d.y
     # 右侧「晨间速递」徽章（楷体加大后加宽加高）
-    badge_w, badge_h = 138, 78
+    badge_w, badge_h = 120, 70
     time_box = (d.width - d.pad - badge_w, header_top, d.width - d.pad, header_top + badge_h)
-    d.round_rect(time_box, NAVY, radius=12)
+    d.round_rect(time_box, NAVY, radius=10)
     # 简易时钟图标（白圈）
-    cx, cy = time_box[0] + 30, header_top + 26
-    d.draw.ellipse((cx - 10, cy - 10, cx + 10, cy + 10), outline=WHITE, width=2)
-    d.draw.line((cx, cy, cx, cy - 6), fill=WHITE, width=2)
-    d.draw.line((cx, cy, cx + 5, cy + 3), fill=WHITE, width=2)
-    d.draw.text((time_box[0] + 46, header_top + 12), clock, font=d.font_badge_time, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
+    cx, cy = time_box[0] + 26, header_top + 22
+    d.draw.ellipse((cx - 9, cy - 9, cx + 9, cy + 9), outline=WHITE, width=2)
+    d.draw.line((cx, cy, cx, cy - 5), fill=WHITE, width=2)
+    d.draw.line((cx, cy, cx + 4, cy + 3), fill=WHITE, width=2)
+    d.draw.text((time_box[0] + 40, header_top + 10), clock, font=d.font_badge_time, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
     label = "晨间速递"
     lw = int(d.draw.textlength(label, font=d.font_badge_label))
-    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 48), label, font=d.font_badge_label, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
+    d.draw.text((time_box[0] + (badge_w - lw) // 2, header_top + 42), label, font=d.font_badge_label, fill=WHITE, stroke_width=1, stroke_fill=WHITE)
 
     # 左侧标题（楷体加粗）+ 副标题（雅黑）
     d.draw_text(x0, header_top + 2, brand_title, d.font_title, NAVY, stroke=1)
-    d.draw_text(x0, header_top + 56, sub_line, d.font_small, MUTED, content_w - badge_w - 24)
-    d.y = header_top + badge_h + 12
+    d.draw_text(x0, header_top + 48, sub_line, d.font_small, MUTED, content_w - badge_w - 16)
+    d.y = header_top + badge_h + 10
 
     # 顶栏分隔三线
     for dy, w in ((0, 1), (3, 3), (8, 1)):
@@ -406,10 +431,10 @@ def render(data: dict, out: Path) -> None:
                 fill=accent,
             )
 
-    title_h = 44
-    row_h = 108
-    side_w = 40
-    pad = 14
+    title_h = 40
+    row_h = 100
+    side_w = 34
+    pad = 10
     block_h = title_h + row_h * 2 + pad
     block_top = d.y
     d.round_rect((x0, block_top, x0 + content_w, block_top + block_h), WHITE, outline=LINE, radius=12)
