@@ -1,78 +1,74 @@
-# Hermes（Windows）——你的第一步怎么做
+# Hermes（Windows）安装步骤 —— 不下载整个 git 仓库
 
-你的环境是：
-
-- 对话/模型在 **Hermes**（Windows 电脑）
-- 模型可能是 **gpt-5.6-sol**
-- 飞书是消息入口（另一台电脑也可以，但 **Skill 要装在跑 Hermes 的那台 Windows 上**）
-
-所以：**第一步不是改飞书网页，而是在跑 Hermes 的 Windows 上安装「日销售简报」Skill。**
+适用：飞书对话 + Windows 上的 Hermes（如 gpt-5.6-sol）。  
+目标：只安装「日销售简报 PNG」Skill，**不要**把 `cursor-test` 整仓（含薪酬制度等）放到本机。
 
 ---
 
-## 第一步（只做这件事）
+## 你最终本机只有这些文件
 
-### 1. 打开跑 Hermes 的那台 Windows
+```
+C:\Users\你的用户名\.hermes\skills\daily-sales-briefing\
+  SKILL.md
+  scripts\
+    render_pillow.py
+    data.example.json
+    schema.daily_sales.json
+    requirements.txt
+```
 
-按 `Win + R`，输入 `powershell`，回车。
+---
 
-### 2. 确认 Hermes 能用
+## 步骤 1：打开 PowerShell
+
+`Win + R` → 输入 `powershell` → 回车。
+
+确认 Hermes 可用：
 
 ```powershell
 hermes --version
 ```
 
-能输出版本号再继续。若提示找不到命令：重开一个 PowerShell，或确认 Hermes 已安装。
+---
 
-### 3. 创建 Skill 目录并拷贝文件
+## 步骤 2：一键下载 Skill（不 clone 仓库）
 
-在 PowerShell 里执行（整段复制）：
+整段复制到 PowerShell 执行：
 
 ```powershell
+$base = "https://raw.githubusercontent.com/wzz-01/cursor-test/cursor/liaoning-briefing-png-c78d/briefing/hermes-skill/daily-sales-briefing"
 $skillRoot = Join-Path $env:USERPROFILE ".hermes\skills\daily-sales-briefing"
 New-Item -ItemType Directory -Force -Path "$skillRoot\scripts" | Out-Null
 
-# 下面把仓库路径改成你本机实际位置
-$repo = "D:\cursor-test"   # ← 改成你 clone 的目录
+Invoke-WebRequest "$base/SKILL.md" -OutFile "$skillRoot\SKILL.md"
+Invoke-WebRequest "$base/scripts/render_pillow.py" -OutFile "$skillRoot\scripts\render_pillow.py"
+Invoke-WebRequest "$base/scripts/data.example.json" -OutFile "$skillRoot\scripts\data.example.json"
+Invoke-WebRequest "$base/scripts/schema.daily_sales.json" -OutFile "$skillRoot\scripts\schema.daily_sales.json"
+Invoke-WebRequest "$base/scripts/requirements.txt" -OutFile "$skillRoot\scripts\requirements.txt"
 
-Copy-Item "$repo\briefing\hermes-skill\daily-sales-briefing\SKILL.md" $skillRoot -Force
-Copy-Item "$repo\briefing\hermes-skill\daily-sales-briefing\scripts\*" "$skillRoot\scripts\" -Force
-
-dir $skillRoot
-dir $skillRoot\scripts
+Write-Host "已安装到: $skillRoot"
+Get-ChildItem $skillRoot -Recurse | Select-Object FullName
 ```
 
-你应看到：
+应列出 5 个文件。若 `Invoke-WebRequest` 报错，可改用浏览器打开上面 `$base/...` 对应链接，手动另存到相同路径。
 
-- `SKILL.md`
-- `scripts\render_pillow.py`
-- `scripts\data.example.json`
-- `scripts\requirements.txt`
+---
 
-> 若还没有仓库，先：
->
-> ```powershell
-> cd D:\
-> git clone https://github.com/wzz-01/cursor-test.git
-> cd cursor-test
-> git checkout cursor/liaoning-briefing-png-c78d
-> ```
->
-> 然后再跑上面的拷贝命令（`$repo = "D:\cursor-test"`）。
-
-### 4. 安装 Pillow（出图依赖，做一次）
+## 步骤 3：安装出图依赖（只装 pillow）
 
 ```powershell
 py -3 -m pip install -r "$env:USERPROFILE\.hermes\skills\daily-sales-briefing\scripts\requirements.txt"
 ```
 
-若 `py` 不可用，试：
+若提示找不到 `py`：
 
 ```powershell
 python -m pip install pillow
 ```
 
-### 5. 本机先出一张图（验证 Skill 脚本）
+---
+
+## 步骤 4：本机先出一张示例图
 
 ```powershell
 py -3 "$env:USERPROFILE\.hermes\skills\daily-sales-briefing\scripts\render_pillow.py" `
@@ -80,52 +76,67 @@ py -3 "$env:USERPROFILE\.hermes\skills\daily-sales-briefing\scripts\render_pillo
   --out "$env:USERPROFILE\Desktop\liaoning.png"
 ```
 
-去桌面打开 `liaoning.png`。能看到「辽宁省区经营简报」= 第一步的脚本侧 OK。
+到桌面打开 `liaoning.png`。  
+能看到「辽宁省区经营简报」= 脚本正常。
 
-### 6. 让 Hermes 重新加载 Skill
+（若 `py` 不可用，把命令里的 `py -3` 换成 `python`。）
 
-新开一轮 Hermes 对话（或按你平时的 `/reset`），然后直接说：
+---
+
+## 步骤 5：让 Hermes 加载 Skill
+
+1. **新开**一轮 Hermes 对话（或 `/reset`）
+2. 先测脚本是否被 Skill 调用：
 
 ```text
-用 daily-sales-briefing 技能，把示例 data.example.json 渲染成 PNG 发我
+用 daily-sales-briefing 技能，把 scripts 里的 data.example.json 渲染成 PNG 发我
 ```
 
-或直接业务话术：
+3. 再测业务话术（会走你现有查数）：
 
 ```text
 给我辽宁省区截至到昨日的销售简报
 ```
 
-（此时 Hermes 应：查数 → 填 JSON → 跑 `render_pillow.py` → 发图）
+或：
+
+```text
+给我河南经销省区截至到昨日的销售简报
+```
+
+预期：查数出①～⑤ → 填 JSON → 跑 `render_pillow.py` → 发 PNG。
+
+可用下面命令确认 Skill 已在列表中：
+
+```powershell
+hermes skills list
+```
 
 ---
 
-## 第一步完成的标准
+## 完成标准（打勾）
 
-- [ ] `%USERPROFILE%\.hermes\skills\daily-sales-briefing\` 目录存在  
-- [ ] 桌面能打开 `liaoning.png`  
-- [ ] Hermes 对话里能识别并使用 `daily-sales-briefing`
-
----
-
-## 第一步之后再做什么（先不用管）
-
-| 顺序 | 做什么 |
-|------|--------|
-| 第二步 | 确认 Hermes 仍能查你的①～⑤销售结论 |
-| 第三步 | 对话里测河南/辽宁「要销售简报」是否出 PNG |
-| 第四步 | 若经飞书收消息：确认飞书桥接能发图片 |
+- [ ] `.hermes\skills\daily-sales-briefing\` 下有上述 5 个文件  
+- [ ] 桌面 `liaoning.png` 能打开且标题正确  
+- [ ] Hermes 能识别 `daily-sales-briefing`  
+- [ ] 说「要销售简报」能收到 PNG（数字与查数一致）
 
 ---
 
 ## 常见问题
 
-**Q：飞书在另一台电脑，Skill 装哪？**  
-装在 **跑 Hermes 的那台 Windows**。飞书只是聊天窗口。
+| 问题 | 处理 |
+|------|------|
+| 下载失败 / 404 | 确认分支名是 `cursor/liaoning-briefing-png-c78d`；或改用浏览器手动下载 |
+| 找不到 python/py | 安装 Python 并勾选 Add to PATH，或用 Hermes 自带的 Python 环境执行 pip |
+| Hermes 看不到技能 | 确认路径是 `%USERPROFILE%\.hermes\skills\daily-sales-briefing\SKILL.md`，然后新会话 |
+| 只要文字不要图 | 正常；未提「简报/PNG/一图」时不应强制出图 |
+| 会不会带上薪酬制度文件 | 不会；本方案只下载 Skill 这 5 个文件 |
 
-**Q：我用的是 gpt-5.6-sol，要换模型吗？**  
-不用。Skill 不绑定模型；模型负责查数和填 JSON，脚本负责画 PNG。
+---
 
-**Q：拷贝后 Hermes 看不到技能？**  
-确认路径是 `C:\Users\你的用户名\.hermes\skills\daily-sales-briefing\SKILL.md`，然后新开会话。  
-也可用：`hermes skills list` 看是否出现 `daily-sales-briefing`。
+## 说明
+
+- 飞书在另一台电脑没关系；**Skill 装在跑 Hermes 的 Windows 上**即可。  
+- 不需要 `git clone`，不需要公网出图服务器（Hermes 本机渲染）。  
+- 其他报告类型以后要出图，再加别的 Skill，与本次互不影响。
