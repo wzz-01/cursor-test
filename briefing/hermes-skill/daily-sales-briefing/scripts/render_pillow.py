@@ -328,10 +328,10 @@ def render(data: dict, out: Path) -> None:
     # Section 02 two columns
     left_w = int(content_w * 0.52)
     right_w = content_w - left_w - 12
-    cities = "  ".join(data["section_02"]["cities"])
-    groups = "  ".join(data["section_02"]["groups"])
-    bottom20 = "  ".join(data["section_02"]["bottom20_groups"])
-    customers = data["section_02"]["customers"]
+    cities = "  ".join(data["section_02"].get("cities") or []) or "—"
+    groups = "  ".join(data["section_02"].get("groups") or []) or "—"
+    bottom20 = "  ".join(data["section_02"].get("bottom20_groups") or []) or "—"
+    customers = data["section_02"].get("customers") or []
     left_h = 56 + 18 + d.text_height(cities, d.font_small, left_w - 28) + 10
     left_h += 18 + d.text_height(groups, d.font_small, left_w - 28) + 10
     left_h += 18 + d.text_height(bottom20, d.font_small, left_w - 28) + 16
@@ -376,7 +376,7 @@ def render(data: dict, out: Path) -> None:
     stats = [
         ("年累计销额", p["sales"], f"增额 {p['delta']}"),
         ("累计进度", p["progress"], f"同期实际 {p['peer_progress']}"),
-        ("同比增速", p["yoy"], f"进度第{p['progress_rank']} / 增速第{p['growth_rank']}"),
+        ("同比增速", p.get("yoy") or "—", f"进度第{p['progress_rank'] if p.get('progress_rank') is not None else '—'} / 增速第{p['growth_rank'] if p.get('growth_rank') is not None else '—'}"),
     ]
     sw = (content_w - 48 - 20) // 3
     for i, (k, v, s) in enumerate(stats):

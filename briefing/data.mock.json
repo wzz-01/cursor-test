@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "brand_title": "销售经营晨报",
+    "title": "模拟省区经营简报",
+    "subtitle": "销售经营日更",
+    "scope": "省区经营管理",
+    "region": "模拟省区",
+    "as_of_date": "2026-07-24",
+    "generated_at": "2026-07-24 08:00",
+    "report_time": "08:00",
+    "data_cutoff": "07:30",
+    "owner": "模拟数据（仅看版式）"
+  },
+  "focus": "聚焦预算进度、客户下单与一线执行",
+  "performance": {
+    "overall": {
+      "budget": "1,280万",
+      "sales": "1,185万",
+      "achieve_rate": "92.6%",
+      "growth_rate": "+8.3%"
+    },
+    "base": {
+      "budget": "860万",
+      "sales": "792万",
+      "achieve_rate": "92.1%",
+      "growth_rate": "+5.6%"
+    }
+  },
+  "headline": "",
+  "section_01": {
+    "title": "销售组达成对比",
+    "items": [
+      { "name": "销售组A", "rate": null, "note": "" },
+      { "name": "销售组B", "rate": null, "note": "" },
+      { "name": "销售组C", "rate": null, "note": "" }
+    ]
+  },
+  "section_02": {
+    "title": "连续三月同比下滑",
+    "cities": [],
+    "groups": [],
+    "customers": [],
+    "bottom20_groups": []
+  },
+  "section_03": {
+    "title": "年累计进度",
+    "sales": "—",
+    "delta": "—",
+    "progress": "—",
+    "peer_progress": "—",
+    "yoy": "—",
+    "progress_rank": null,
+    "growth_rank": null,
+    "unit_count": null
+  },
+  "section_04": {
+    "title": "昨日订单",
+    "order_amount": "—",
+    "order_qty": null,
+    "budget_share": "—",
+    "budget_base": "—",
+    "no_order_groups_5d": [],
+    "no_order_customers_month": [],
+    "yesterday_customers": []
+  },
+  "warnings": [
+    "以下为模拟版式，非真实经营数据"
+  ],
+  "actions": [
+    "确认版式后，用真实查询结果替换 performance 与各 section"
+  ],
+  "footer": {
+    "sources": "模拟数据",
+    "note": "仅用于预览 PNG 格式；整体=全品类，基量=大单品"
+  }
+}
