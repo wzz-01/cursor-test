@@ -1,0 +1,215 @@
+{
+  "meta": {
+    "brand_title": "销售经营晨报",
+    "title": "豫北经销直管区销售经营简报",
+    "subtitle": "销售经营日更",
+    "scope": "省区经营管理",
+    "region": "豫北经销直管区",
+    "as_of_date": "2026-07-28",
+    "generated_at": "2026-07-29 08:00",
+    "report_time": "08:00",
+    "data_cutoff": "07:30",
+    "owner": "豫北经销直管区销售管理"
+  },
+  "focus": "聚焦预算进度、客户下单与一线执行",
+  "performance": {
+    "overall": {
+      "budget": "582万",
+      "sales": "587万",
+      "achieve_rate": "100.8%",
+      "order_progress": "",
+      "growth_rate": "+20.9%"
+    },
+    "base": {
+      "budget": "450万",
+      "sales": "481万",
+      "achieve_rate": "106.8%",
+      "order_progress": "",
+      "growth_rate": "+20.3%"
+    }
+  },
+  "section_groups": {
+    "title": "分区 / 销售组业绩进度",
+    "warn_below": 90,
+    "rows": [
+      {
+        "name": "濮鹤经销组",
+        "achieve_rate": 117.0,
+        "growth_rate": 34.5,
+        "base_achieve_rate": 123.6,
+        "order_amount_5d": "43万元"
+      },
+      {
+        "name": "安阳经销组",
+        "achieve_rate": 104.0,
+        "growth_rate": 33.2,
+        "base_achieve_rate": 113.0,
+        "order_amount_5d": "14万元"
+      },
+      {
+        "name": "焦济经销组",
+        "achieve_rate": 87.7,
+        "growth_rate": -2.5,
+        "base_achieve_rate": 89.8,
+        "order_amount_5d": "19万元"
+      },
+      {
+        "name": "新乡经销组",
+        "achieve_rate": 87.6,
+        "growth_rate": 7.8,
+        "base_achieve_rate": 92.5,
+        "order_amount_5d": "39万元"
+      }
+    ]
+  },
+  "section_bottom10": {
+    "title": "预算订单进度后10客户",
+    "rows": []
+  },
+  "section_visit": {
+    "title": "拜访执行",
+    "metrics": [
+      {"label": "昨日拜访客户数", "value": "", "icon": "people"},
+      {"label": "本月拜访客户数", "value": "20", "icon": "briefcase"},
+      {"label": "客户拜访覆盖率", "value": "47.6%", "icon": "target"},
+      {"label": "昨日拜访终端数", "value": "", "icon": "store"},
+      {"label": "本月拜访终端数", "value": "1153", "icon": "pins"},
+      {"label": "终端拜访覆盖率", "value": "8.7%", "icon": "check"}
+    ],
+    "alert": "双7百客户未拜访 —"
+  },
+  "section_promo": {
+    "title": "推广执行",
+    "metrics": [
+      {"label": "昨日推广门店数", "value": "", "icon": "megaphone"},
+      {"label": "本月推广门店数", "value": "", "icon": "bars"},
+      {"label": "推广门店覆盖率", "value": "", "icon": "star"},
+      {"label": "昨日战场场次", "value": "", "icon": "money"},
+      {"label": "本月战场场次", "value": "", "icon": "flag"},
+      {"label": "参与人数", "value": "", "icon": "pair"}
+    ],
+    "trend_7d": [],
+    "structure": []
+  },
+  "section_warn": {
+    "title": "经营预警",
+    "blocks": [
+      {
+        "key": "A",
+        "title": "连续三月同比下滑",
+        "tone": "red",
+        "lines": [
+          "城市：济源市",
+          "销售组：焦济经销组",
+          "客户：8户（详见下滑清单）"
+        ]
+      },
+      {
+        "key": "B",
+        "title": "近5日未下单销售组",
+        "tone": "orange",
+        "lines": ["无"]
+      },
+      {
+        "key": "C",
+        "title": "近10日未下单 / 下滑客户",
+        "tone": "red",
+        "lines": [
+          "原阳县老陈冷冻食品经营行",
+          "安阳市殷都区大胖副食品经营部",
+          "延津县丰庄镇海宾冷饮批发部",
+          "河南很好商贸有限责任公司",
+          "济源市豪家商贸有限公司",
+          "焦作市慧聪商贸有限公司",
+          "范县家胜冷冻食品批发中心",
+          "辉县市城关清真寺冷库"
+        ]
+      }
+    ]
+  },
+  "section_01": {
+    "title": "分区 / 销售组业绩进度",
+    "warn_below": 90,
+    "rows": [
+      {
+        "name": "濮鹤经销组",
+        "achieve_rate": 117.0,
+        "growth_rate": 34.5,
+        "base_achieve_rate": 123.6,
+        "order_amount_5d": "43万元"
+      },
+      {
+        "name": "安阳经销组",
+        "achieve_rate": 104.0,
+        "growth_rate": 33.2,
+        "base_achieve_rate": 113.0,
+        "order_amount_5d": "14万元"
+      },
+      {
+        "name": "焦济经销组",
+        "achieve_rate": 87.7,
+        "growth_rate": -2.5,
+        "base_achieve_rate": 89.8,
+        "order_amount_5d": "19万元"
+      },
+      {
+        "name": "新乡经销组",
+        "achieve_rate": 87.6,
+        "growth_rate": 7.8,
+        "base_achieve_rate": 92.5,
+        "order_amount_5d": "39万元"
+      }
+    ]
+  },
+  "section_02": {
+    "title": "连续三月同比下滑",
+    "cities": ["济源市"],
+    "groups": ["焦济经销组"],
+    "customers": [
+      "原阳县老陈冷冻食品经营行",
+      "安阳市殷都区大胖副食品经营部",
+      "延津县丰庄镇海宾冷饮批发部",
+      "河南很好商贸有限责任公司",
+      "济源市豪家商贸有限公司",
+      "焦作市慧聪商贸有限公司",
+      "范县家胜冷冻食品批发中心",
+      "辉县市城关清真寺冷库"
+    ],
+    "bottom20_groups": []
+  },
+  "section_03": {
+    "title": "年累计进度",
+    "sales": "587万",
+    "delta": "+101万",
+    "progress": "5.5%",
+    "peer_progress": "5.1%",
+    "yoy": "+20.9%",
+    "progress_rank": 8,
+    "growth_rank": 23,
+    "unit_count": 35
+  },
+  "section_04": {
+    "title": "昨日订单（7月28日）",
+    "order_amount": "44万元",
+    "order_qty": 5766,
+    "budget_share": "7.6%",
+    "budget_base": "582万元（7月1日月初预算）",
+    "no_order_groups_5d": [],
+    "no_order_customers_month": ["原阳县老陈冷冻食品经营行（新乡经销组，本月净销售-3,016元）"],
+    "yesterday_customers": []
+  },
+  "warnings": [
+    "焦济经销组达成率87.7%、同比-2.5%，且连续三个月同比下滑",
+    "新乡经销组达成率87.6%，低于90%预警线",
+    "门店拜访率仅8.7%（客户拜访率47.6%）"
+  ],
+  "actions": [
+    "焦济：对连续下滑客户制定恢复计划",
+    "新乡：对标濮鹤拆解达成缺口",
+    "拜访：继续提升ABC+CD覆盖与转化复盘"
+  ],
+  "footer": {
+    "sources": "数据截至2026-07-28",
+    "note": "整体=全品类；基量=大单品"
+  }
+}

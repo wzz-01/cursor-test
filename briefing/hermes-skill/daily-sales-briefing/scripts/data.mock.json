@@ -1,0 +1,102 @@
+{
+  "meta": {
+    "brand_title": "销售经营晨报",
+    "title": "河南经销省区经营简报（模拟）",
+    "subtitle": "销售经营日更",
+    "scope": "省区经营管理",
+    "region": "河南经销省区",
+    "as_of_date": "2026-07-24",
+    "generated_at": "2026-07-24 08:00",
+    "report_time": "08:00",
+    "data_cutoff": "07:30",
+    "owner": "模拟数据"
+  },
+  "focus": "聚焦预算进度、客户下单与一线执行",
+  "performance": {
+    "overall": {
+      "budget": "—",
+      "sales": "—",
+      "achieve_rate": "—",
+      "growth_rate": "—"
+    },
+    "base": {
+      "budget": "—",
+      "sales": "—",
+      "achieve_rate": "—",
+      "growth_rate": "—"
+    }
+  },
+  "headline": "",
+  "section_01": {
+    "title": "分区 / 销售组业绩进度",
+    "warn_below": 90,
+    "rows": [
+      {
+        "name": "濮鹤经销组",
+        "achieve_rate": 117.0,
+        "growth_rate": 34.5,
+        "base_achieve_rate": 123.6,
+        "order_amount_5d": "43万元"
+      },
+      {
+        "name": "安阳经销组",
+        "achieve_rate": 104.0,
+        "growth_rate": 33.2,
+        "base_achieve_rate": 113.0,
+        "order_amount_5d": "14万元"
+      },
+      {
+        "name": "焦济经销组",
+        "achieve_rate": 87.7,
+        "growth_rate": -2.5,
+        "base_achieve_rate": 89.8,
+        "order_amount_5d": "19万元"
+      },
+      {
+        "name": "新乡经销组",
+        "achieve_rate": 87.6,
+        "growth_rate": 7.8,
+        "base_achieve_rate": 92.5,
+        "order_amount_5d": "39万元"
+      }
+    ]
+  },
+  "section_02": {
+    "title": "连续三月同比下滑",
+    "cities": [],
+    "groups": [],
+    "customers": [],
+    "bottom20_groups": []
+  },
+  "section_03": {
+    "title": "年累计进度",
+    "sales": "—",
+    "delta": "—",
+    "progress": "—",
+    "peer_progress": "—",
+    "yoy": "—",
+    "progress_rank": null,
+    "growth_rank": null,
+    "unit_count": null
+  },
+  "section_04": {
+    "title": "昨日订单",
+    "order_amount": "—",
+    "order_qty": null,
+    "budget_share": "—",
+    "budget_base": "—",
+    "no_order_groups_5d": [],
+    "no_order_customers_month": [],
+    "yesterday_customers": []
+  },
+  "warnings": [
+    "达成率低于90%的销售组标红（焦济、新乡）"
+  ],
+  "actions": [
+    "确认第02模块表格版式"
+  ],
+  "footer": {
+    "sources": "用户提供四组模拟数据",
+    "note": "濮鹤/安阳/焦济/新乡"
+  }
+}
