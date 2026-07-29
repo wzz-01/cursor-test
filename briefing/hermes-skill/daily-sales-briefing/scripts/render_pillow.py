@@ -204,7 +204,7 @@ class Drawer:
         self.font_small = load_font(13, family="yahei")
         self.font_tiny = load_font(11, family="yahei")
         self.font_kpi = load_font(22, bold=True, family="yahei")
-        self.font_kpi_lg = load_font(28, bold=True, family="yahei")  # 业绩追踪数字加大
+        self.font_kpi_lg = load_font(32, bold=True, family="yahei")  # 业绩追踪数字加大
         self.font_stat = load_font(20, bold=True, family="yahei")
         self.font_badge_time = load_font(28, bold=True, family="kaiti")  # 08:00
         self.font_badge_label = load_font(16, bold=True, family="kaiti")  # 晨间速递
@@ -298,23 +298,24 @@ def render(data: dict, out: Path) -> None:
         d.draw.line((x0, d.y + dy, x0 + content_w, d.y + dy), fill=NAVY, width=w)
     d.y += 18
 
-    # 聚焦语：楷体加粗加大、整行居中；两侧橘黄靶子图标
+    # 聚焦语：楷体加粗加大、整行居中；两侧橘黄靶子（实心同心圆 + 十字）
     focus = data.get("focus") or "聚焦预算进度、客户下单与一线执行"
     focus_font = d.font_focus
     text_w = int(d.draw.textlength(focus, font=focus_font))
-    icon_gap = 14
-    icon_r = 10
+    icon_gap = 16
+    icon_r = 13
     group_w = icon_r * 4 + icon_gap * 2 + text_w
     start_x = x0 + max(0, (content_w - group_w) // 2)
-    ty = d.y + 16
+    ty = d.y + 18
 
-    def draw_target(cx: int, cy: int, r: int = 10):
-        # 橘黄靶子：外环 + 中环 + 靶心 + 十字准星
-        d.draw.ellipse((cx - r, cy - r, cx + r, cy + r), outline=ORANGE, width=2)
-        d.draw.ellipse((cx - r + 3, cy - r + 3, cx + r - 3, cy + r - 3), outline=ORANGE, width=1)
-        d.draw.ellipse((cx - 2, cy - 2, cx + 2, cy + 2), fill=ORANGE)
-        d.draw.line((cx - r - 2, cy, cx + r + 2, cy), fill=ORANGE, width=1)
-        d.draw.line((cx, cy - r - 2, cx, cy + r + 2), fill=ORANGE, width=1)
+    def draw_target(cx: int, cy: int, r: int = 13):
+        # 明确的靶子造型：橙底 → 白环 → 橙环 → 白靶心 + 十字准星
+        d.draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=ORANGE)
+        d.draw.ellipse((cx - r + 3, cy - r + 3, cx + r - 3, cy + r - 3), fill=WHITE)
+        d.draw.ellipse((cx - r + 6, cy - r + 6, cx + r - 6, cy + r - 6), fill=ORANGE)
+        d.draw.ellipse((cx - 3, cy - 3, cx + 3, cy + 3), fill=WHITE)
+        d.draw.line((cx - r - 3, cy, cx + r + 3, cy), fill=ORANGE, width=2)
+        d.draw.line((cx, cy - r - 3, cx, cy + r + 3), fill=ORANGE, width=2)
 
     draw_target(start_x + icon_r, ty, icon_r)
     text_x = start_x + icon_r * 2 + icon_gap
@@ -322,7 +323,7 @@ def render(data: dict, out: Path) -> None:
     text_h = bbox[3] - bbox[1]
     d.draw.text((text_x, ty - text_h // 2 - 1), focus, font=focus_font, fill=NAVY, stroke_width=1, stroke_fill=NAVY)
     draw_target(text_x + text_w + icon_gap + icon_r, ty, icon_r)
-    d.y += 58
+    d.y += 62
 
     # 01 业绩追踪：整体 / 基量 两行四列
     perf = data.get("performance") or {}
@@ -373,21 +374,20 @@ def render(data: dict, out: Path) -> None:
             cx2 = cx1 + cell_w - 6
             cell_h = row_h - 8
             d.round_rect((cx1, y, cx2, y + cell_h), WHITE, outline=LINE, radius=8)
-            # 标题 / 数字 / 图标 全部水平居中
+            # 标题 / 数字 / 图标 全部水平+垂直居中堆叠
             label = f"{row_label}{suffix}"
             lw = int(d.draw.textlength(label, font=d.font_tiny))
-            d.draw.text((cx1 + (cx2 - cx1 - lw) // 2, y + 8), label, font=d.font_tiny, fill=MUTED)
             val = str(values.get(key) or "—")
             color = growth_color(val) if key == "growth_rate" else NAVY
             vw = int(d.draw.textlength(val, font=d.font_kpi_lg))
-            d.draw.text((cx1 + (cx2 - cx1 - vw) // 2, y + 28), val, font=d.font_kpi_lg, fill=color)
-            iw = 28
-            ix1 = cx1 + (cx2 - cx1 - iw) // 2
-            iy1 = y + cell_h - 30
-            draw_metric_icon(icon, (ix1, iy1, ix1 + iw, iy1 + 22), icon_color)
+            mid = (cx1 + cx2) // 2
+            d.draw.text((mid - lw // 2, y + 10), label, font=d.font_tiny, fill=MUTED)
+            d.draw.text((mid - vw // 2, y + 30), val, font=d.font_kpi_lg, fill=color)
+            iw, ih = 30, 22
+            draw_metric_icon(icon, (mid - iw // 2, y + cell_h - 28, mid + iw // 2, y + cell_h - 6), icon_color)
 
     block_top = d.y
-    row_h = 96
+    row_h = 102
     block_h = 34 + row_h * 2 + 18
     d.round_rect((x0, block_top, x0 + content_w, block_top + block_h), SOFT_BLUE, outline=LINE, radius=12)
     tab = "01 业绩追踪"
@@ -449,7 +449,7 @@ def render(data: dict, out: Path) -> None:
         return f"{p:.1f}%"
 
     header_h = 36
-    row_h_tbl = 40
+    row_h_tbl = 42
     title_h = 40
     table_h = title_h + header_h + max(1, len(rows)) * row_h_tbl + 16
     top = d.y
@@ -471,6 +471,12 @@ def render(data: dict, out: Path) -> None:
     col_ws[-1] = usable - sum(col_ws[:-1])
     table_x = x0 + 14
     head_y = top + title_h
+    grid_bot = head_y + header_h + max(1, len(rows)) * row_h_tbl
+
+    # 表体先铺浅蓝底，白线才看得见
+    TABLE_BODY = (198, 214, 232)
+    TABLE_ZEBRA = (184, 204, 226)
+    d.draw.rectangle((table_x, head_y, table_x + usable, grid_bot), fill=TABLE_BODY)
     d.draw.rectangle((table_x, head_y, table_x + usable, head_y + header_h), fill=NAVY)
 
     cx = table_x
@@ -486,8 +492,8 @@ def render(data: dict, out: Path) -> None:
         d.draw.text((cx + (cw - tw) // 2, ry + 6), txt, font=d.font_small, fill=text_color)
         bar_x1 = cx + 10
         bar_x2 = cx + cw - 10
-        bar_y1 = ry + rh - 12
-        bar_y2 = ry + rh - 6
+        bar_y1 = ry + rh - 13
+        bar_y2 = ry + rh - 7
         d.round_rect((bar_x1, bar_y1, bar_x2, bar_y2), (230, 236, 244), radius=3)
         if pct is not None:
             fill_w = int((bar_x2 - bar_x1) * max(0.0, min(pct / 100.0, 1.0)))
@@ -497,7 +503,7 @@ def render(data: dict, out: Path) -> None:
     for idx, row in enumerate(rows):
         ry = head_y + header_h + idx * row_h_tbl
         if idx % 2 == 1:
-            d.draw.rectangle((table_x, ry, table_x + usable, ry + row_h_tbl), fill=(248, 250, 253))
+            d.draw.rectangle((table_x, ry, table_x + usable, ry + row_h_tbl), fill=TABLE_ZEBRA)
 
         achieve = to_pct(row.get("achieve_rate"))
         warn = achieve is not None and achieve < warn_below
@@ -521,16 +527,17 @@ def render(data: dict, out: Path) -> None:
         tw = int(d.draw.textlength(amt, font=d.font_small))
         d.draw.text((cx + (col_ws[4] - tw) // 2, ry + 12), amt, font=d.font_small, fill=text_color)
 
-    # 细白线网格
-    grid_bot = head_y + header_h + max(1, len(rows)) * row_h_tbl
-    d.draw.line((table_x, head_y + header_h, table_x + usable, head_y + header_h), fill=WHITE, width=1)
+    # 细白线网格（铺在浅蓝底上可见）
+    d.draw.line((table_x, head_y + header_h, table_x + usable, head_y + header_h), fill=WHITE, width=2)
     for idx in range(len(rows)):
         ry = head_y + header_h + (idx + 1) * row_h_tbl
-        d.draw.line((table_x, ry, table_x + usable, ry), fill=WHITE, width=1)
+        d.draw.line((table_x, ry, table_x + usable, ry), fill=WHITE, width=2)
     vx = table_x
     for cw in col_ws[:-1]:
         vx += cw
-        d.draw.line((vx, head_y, vx, grid_bot), fill=WHITE, width=1)
+        d.draw.line((vx, head_y, vx, grid_bot), fill=WHITE, width=2)
+    # 外边框白线
+    d.draw.rectangle((table_x, head_y, table_x + usable, grid_bot), outline=WHITE, width=2)
 
     d.y = top + table_h + 14
 
